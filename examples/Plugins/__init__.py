@@ -22,6 +22,12 @@ class P:
         return self._value
 
 
+class OutValue():
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.out_value = P(0)
+
+
 class OutSpeed():
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -34,8 +40,6 @@ class InSpeed():
         self.in_speed = P(0)
 
 
-
-
 class InCourse(Interface_in):
     def __init__(self):
         self.course = None
@@ -46,14 +50,13 @@ class OutCourse(Interface_in):
         self.course = None
 
 
-
 class OutLatLon(Interface_in):
     def __init__(self):
         self.out_lat = None
         self.out_lon = None
 
+
 class InLatLon(Interface_in):
     def __init__(self):
         self.in_lat = None
         self.in_lon = None
-

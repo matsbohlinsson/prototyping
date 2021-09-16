@@ -1,4 +1,4 @@
-from interface import InSpeed, OutSpeed
+from examples.Plugins import OutSpeed, InSpeed
 from plugins import Plugin
 from plugins.scheduler import on_scheduler_fast_loop, on_restarted, restart_on_exception, on_exception, on_first_loop
 
@@ -17,11 +17,11 @@ class Smoother(Plugin, InSpeed, OutSpeed):
 
     @on_scheduler_fast_loop
     def main_loop(self, loop_index: int):
-        speed_avg = self.calc_average_speed(self.speed_history, self.in_speed.get(), self.speed_change_limit)
+        speed_avg = self.calcsmoothing_speed(self.speed_history, self.in_speed.get(), self.speed_change_limit)
         self.out_speed.set(speed_avg)
 
     @classmethod
-    def calc_average_speed(cls, speed_history, speed_current, speed_change_limit):
+    def calcsmoothing_speed(cls, speed_history, speed_current, speed_change_limit):
         window = speed_history
         window.append(speed_current)
         window.pop(0)

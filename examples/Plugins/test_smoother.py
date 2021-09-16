@@ -1,8 +1,7 @@
 from timeit import timeit
 
-from plugins.interface import InSpeed, OutSpeed
-from plugins.Smoother import Smoother
-from plugins.Generator import Generator
+from examples.Plugins.Smoother import Smoother
+from examples.Plugins.Generator import Generator
 
 
 def test_smoother():
@@ -18,7 +17,7 @@ def test_smoother():
     smoother = Smoother()
     generator = Generator(lambda loop_index2: loop_index2 % 1000)
 
-    transfer_connections = lambda x: smoother.in_speed.set(generator.out_speed.get())
+    transfer_connections = lambda x: smoother.in_speed.set(generator.out_value.get())
 
     execution_order = [generator.main_loop, transfer_connections, smoother.main_loop]
 

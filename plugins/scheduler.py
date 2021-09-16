@@ -8,6 +8,7 @@ def on_first_loop(args):
     return args
 
 def restart_on_exception(args):
+    print("restart_on_exception", args)
     return args
 
 def on_exception(args):

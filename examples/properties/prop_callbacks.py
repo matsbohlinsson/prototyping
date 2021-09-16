@@ -1,4 +1,3 @@
-
 class A:
     def __init__(self):
         super().__init__()  # forwards all unused arguments
@@ -33,8 +32,19 @@ b=B()
 A_get = A.speed.fget
 B_set = B.speed.fset
 
+
+
+
 print(b.speed)
 B_set(b, A_get(a))
 print(b.speed)
 
-print(A.speed.)
+def connect(out, out_obj, inp, inp_obj):
+    print(out, out_obj, inp, inp_obj)
+    out(out_obj, inp(inp_obj))
+
+connect(B.speed.fset, b, A.speed.fget, a)
+
+
+
+
