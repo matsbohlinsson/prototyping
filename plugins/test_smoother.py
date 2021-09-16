@@ -1,7 +1,8 @@
 from timeit import timeit
 
 from plugins.interface import InSpeed, OutSpeed
-from plugins.p1 import Smoother, Generator
+from plugins.Smoother import Smoother
+from plugins.Generator import Generator
 
 
 def test_smoother():
