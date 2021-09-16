@@ -3,7 +3,6 @@ from interface import InSpeed, OutSpeed, InCourse, OutLatLon, InLatLon
 from plugins.scheduler import on_scheduler_fast_loop, on_restarted, restart_on_exception, on_exception, on_first_loop
 
 
-
 @restart_on_exception
 class Smoother(InSpeed, OutSpeed):
     window_size: int = 4
@@ -30,7 +29,7 @@ class Smoother(InSpeed, OutSpeed):
 
     @on_restarted
     @on_first_loop
-    def init_window(self):
+    def init_history_window(self):
         speed = self.in_speed if self.in_speed is not None else 0
         self.speed_history = [speed] * self.window_size
         self.out_speed = self.in_speed
@@ -48,7 +47,7 @@ print(isinstance(d, InSpeed))
 
 
 def simulate_first_loop(d):
-    d.init_window()
+    d.init_history_window()
 
 
 def simulate_loop(d, index):
