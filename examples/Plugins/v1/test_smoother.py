@@ -1,12 +1,10 @@
 import math
-import time
 from random import random
-from timeit import timeit
 
-from examples.Plugins.Smoother import Smoother
-from examples.Plugins.Generator import Generator
+from examples.Plugins.v1.Smoother import Smoother
+from examples.Plugins.v1.Generator import Generator
 import matplotlib.pyplot as plt
-import numpy as np
+
 
 def test_smoother():
     test_speed_list = [1, 2, 7, 4, 3, 200, 198, 201, 200, 100, 101, 102, 80, 104, 106, 107, 107, 107, 107, 107, 107,
@@ -21,7 +19,8 @@ def test_smoother():
     smoother = Smoother(window_size=20, speed_change_limit=20)
     generator = Generator(lambda loop_index2: math.sin(loop_index2/100)*100)
 
-    transfer_connections = lambda x: smoother.in_speed.set(generator.out_value.get()+ random()*5)
+    transfer_connections = lambda x: smoother.in_speed.set(generator.out_value + random()*5)
+
 
     execution_order = [generator.main_loop, transfer_connections, smoother.main_loop]
 
