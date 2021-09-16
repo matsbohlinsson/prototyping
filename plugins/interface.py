@@ -10,14 +10,30 @@ class Ispeed(Interface_in):
     pass
 
 
-class InSpeed(Ispeed):
-    def __init__(self):
-        self.in_speed = None
+class P:
+    def __init__(self, value):
+        super().__init__()  # forwards all unused arguments
+        self._value = value
+
+    def set(self, value):
+        self._value = value
+
+    def get(self):
+        return self._value
 
 
-class OutSpeed(Ispeed):
-    def __init__(self):
-        self.out_speed = None
+class OutSpeed():
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.out_speed = P(0)
+
+
+class InSpeed():
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.in_speed = P(0)
+
+
 
 
 class InCourse(Interface_in):
