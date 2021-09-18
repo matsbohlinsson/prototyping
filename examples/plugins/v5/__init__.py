@@ -63,6 +63,18 @@ class InSpeed(Interface_in):
     def in_speed(self, speed):
         self._in_speed = speed
 
+class InHeight(Interface_in):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._in_speed = 0
+
+    @property
+    def in_height(self):
+        return self._in_speed
+
+    @in_height.setter
+    def in_height(self, speed):
+        self._in_speed = speed
 
 class InCourse(Interface_in):
     def __init__(self):
