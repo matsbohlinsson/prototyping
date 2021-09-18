@@ -11,7 +11,7 @@ class Plugin(ABC):
         self.debug = {}
 
 
-    def connect(self, inp_obj: Plugin, out: Callable[[Any], Any], inp: Callable[[Any], Any]):
+    def _connect(self, inp_obj: Plugin, out: Callable[[Any], Any], inp: Callable[[Any], Any]):
         def debug_info(connection_name:str, value):
             self.debug.update({connection_name: value})
 
@@ -24,6 +24,10 @@ class Plugin(ABC):
         print(out, out_obj, inp, inp_obj)
         # Add debug info in lambda. Name it plugin_name.out_value .....
         self.connections.append(transfer)
+
+    def connect(self, inp_obj: Plugin, out , inp):
+        self._connect(inp_obj, out.fget, inp.fset)
+
 
     def main_execution(self) -> {}:
         self.debug = {}
