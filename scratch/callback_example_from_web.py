@@ -32,4 +32,3 @@ print(app.call_registered('/'))
 print(app.call_registered('/next_page'))
 
 
-

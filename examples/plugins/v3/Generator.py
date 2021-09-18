@@ -2,7 +2,7 @@ import numbers
 from typing import Callable
 
 from plugins import Plugin
-from examples.Plugins.v3 import OutValue
+from examples.plugins.v3 import OutValue
 from plugins.scheduler import on_scheduler_fast_loop
 
 

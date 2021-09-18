@@ -1,9 +1,9 @@
 import math
 from random import random
 
-from examples.Plugins.v2 import InSpeed, OutSpeed, OutValue
-from examples.Plugins.v2.Smoother import Smoother
-from examples.Plugins.v2.Generator import Generator
+from examples.plugins.v2 import InSpeed, OutSpeed, OutValue
+from examples.plugins.v2.Smoother import Smoother
+from examples.plugins.v2.Generator import Generator
 import matplotlib.pyplot as plt
 
 

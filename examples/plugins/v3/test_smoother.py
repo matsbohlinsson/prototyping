@@ -2,9 +2,9 @@ import math
 from random import random
 from typing import Optional, Callable, Any
 
-from examples.Plugins.v3 import InSpeed, OutSpeed, OutValue
-from examples.Plugins.v3.Smoother import Smoother
-from examples.Plugins.v3.Generator import Generator
+from examples.plugins.v3 import InSpeed, OutSpeed, OutValue
+from examples.plugins.v3.Smoother import Smoother
+from examples.plugins.v3.Generator import Generator
 import matplotlib.pyplot as plt
 
 from plugins import Plugin
@@ -15,6 +15,7 @@ def test_smoother():
         d.init_history_window()
 
     def make_transfer_function(out: Callable[[Any], Any], out_obj:Plugin, inp: Callable[[Any], Any], inp_obj:Plugin):
+
         print(out, out_obj, inp, inp_obj)
         print(f"Transfer:{out_obj.plugin_name}.{out.__name__} -> {inp_obj.plugin_name}.{inp.__name__}")
         # Add debug info in lambda. Name it plugin_name.out_value .....
