@@ -1,4 +1,4 @@
-from examples.plugins.v1 import OutSpeed, InSpeed
+from examples.plugins.old.v1 import OutSpeed, InSpeed
 from plugins import Plugin
 from plugins.scheduler import on_scheduler_fast_loop, on_restarted, restart_on_exception, on_exception, on_first_loop
 

@@ -35,7 +35,7 @@ def test_smoother():
 
     def make_transfer_function(out: Callable[[Any], Any], out_obj:Plugin, inp: Callable[[Any], Any], inp_obj:Plugin):
         print(out, out_obj, inp, inp_obj)
-        print(f"Transfer:{out_obj.plugin_name}.{out.__name__} -> {inp_obj.plugin_name}.{inp.__name__}")
+        print(f"QTransfer:{out_obj.plugin_name}.{out.__name__} -> {inp_obj.plugin_name}.{inp.__name__}")
         # Add debug info in lambda. Name it plugin_name.out_value .....
         return lambda: inp(inp_obj, out(out_obj))
 

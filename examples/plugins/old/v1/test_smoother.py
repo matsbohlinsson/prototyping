@@ -1,8 +1,8 @@
 import math
 from random import random
 
-from examples.plugins.v1.Smoother import Smoother
-from examples.plugins.v1.Generator import Generator
+from examples.plugins.old.v1 import Smoother
+from examples.plugins.old.v1 import Generator
 import matplotlib.pyplot as plt
 
 
