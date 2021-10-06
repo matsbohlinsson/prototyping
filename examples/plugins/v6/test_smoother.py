@@ -36,7 +36,7 @@ class MainPlugin(Plugin):
 def my_main():
     debug = []
     main = MainPlugin(plugin_name='main')
-    for i in range(0,11):
+    for i in range(0,111):
         d = main.main_loop()
         debug.append(d)
     print(debug)

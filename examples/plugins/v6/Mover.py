@@ -13,5 +13,5 @@ class Mover(Plugin, InSpeed, InHeight):
 
     @on_scheduler_fast_loop
     def main_loop(self):
-        print(f'Gott:{self.in_speed}')
-        #print(f'Got:{self.in_height}')
+        print(f'Got in_speed:{self.in_speed}')
+        print(f'Got in_height:{self.in_height}')

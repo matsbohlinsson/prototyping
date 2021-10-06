@@ -1,6 +1,5 @@
 import numbers
 from typing import Callable
-
 from plugins import Plugin
 from examples.plugins.v6 import OutValue
 from plugins.scheduler import on_scheduler_fast_loop
