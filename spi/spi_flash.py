@@ -59,7 +59,7 @@ class spiflash(object):
         # statreg2 = self.spi.xfer2([RDSR2,RDSR2])[1]
         return statreg
 
-    def read_page(self, byte_1, byte_2):
+    def read_page_old(self, byte_1, byte_2):
         xfer = [READ, 0, byte_2, byte_1] + [255 for _ in range(256)]  # command + 256 dummies
         return self.spi.xfer2(xfer)[4:]  # skip 4 first bytes (dummies)
 
@@ -80,7 +80,7 @@ class spiflash(object):
 
         self.wait_until_not_busy()
 
-    def write_page(self, byte_1, byte_2, page):
+    def write_page_old(self, byte_1, byte_2, page):
         self.write_enable()
 
         # print self.read_status()
@@ -92,7 +92,7 @@ class spiflash(object):
         self.wait_until_not_busy()
 
     def write_and_verify_page(self, addr1, addr2, page):
-        self.write_page(addr1, addr2, page)
+        self.write_page_to_flash(addr1, addr2, page)
         return self.read_page(addr1, addr2)[:256] == page[:256]
 
     # erases ----------------------------------------------------------------------------------
@@ -134,36 +134,26 @@ class spiflash(object):
             s += "\n"
         print(s)
 
-    def read_page_mboh(self, byte_1, byte_2, byte_3):
-        xfer = [READ, byte_1, byte_2, byte_3] + [255 for _ in range(256)]  # command + 256 dummies
-        return self.spi.xfer2(xfer)[4:]  # skip 4 first bytes (dummies)
-
-    def write_page_mboh(self, byte_1, byte_2, byte_3, page):
-
-        self.write_enable()
-        # print self.read_status()
-        xfer = [WRITE, byte_1, byte_2, byte_3] + page[:256]
-        self.spi.xfer2(xfer)
-        sleep_ms(10)
-        self.wait_until_not_busy()
-
     def fill_memory(self, start_page, stop_page):
         for page in range(start_page, stop_page):
-            self.write_enable()
-            print(f'Page:{page}')
-            self.spi.xfer2([6])  # WREN  Write enable
-            self.spi.xfer2([0x2, 0, page, 0] + [x+page for x in range(256)])  # Write page 255
-            sleep_ms(10)
-            self.wait_until_not_busy()
+            self.write_page_to_flash(page, [x + page for x in range(256)])
+
+    def write_page_to_flash(self, page, bytes):
+        self.write_enable()
+        self.spi.xfer2([6])  # WREN  Write enable
+        self.spi.xfer2([0x2, int(page / 256), page % 256, 0] + bytes)  # Write page 255
+        sleep_ms(10)
+        self.wait_until_not_busy()
 
     def read_memory(self, start_page, stop_page):
         for page in range(start_page, stop_page):
             print(f'Page:{page}')
-            bytes = self.spi.xfer2([0x3, 0, page, 0] + [255 for _ in range(256)])
+            bytes = self.spi.xfer2([0x3, int(page/256), page%256, 0] + [255 for _ in range(256)])
             print(f'{bytes}')
 
-
-    # TESTS -------------------------------------------------------------------
+    def get_page_from_flash(self, page):
+        xfer=[0x3, int(page/256), page%256, 0] + [255 for _ in range(256)]
+        return self.spi.xfer2(xfer)[4:]  # skip 4 first bytes (dummies)
 
 
 # TESTS -------------------------------------------------------------------
@@ -172,21 +162,35 @@ class spiflash(object):
 #       	cMode |= SPI_CPHA; // Phase, data is clocked out on falling_edge and sampled on rising_edge
 # 	cMode |= SPI_CPOL; // Polarity => Clock is default high
 # SPI_MODE_3		(SPI_CPOL|SPI_CPHA)
-chip = spiflash(bus=1, cs=3, mode=3, max_speed_hz=12000000)
+chip = spiflash(bus=1, cs=3, mode=3, max_speed_hz=180000)
 print(chip.read_id())
 
 
-def test():
-    print("Running test3")
-    chip.erase_all()
-    #chip.read_memory(9, 12)
-    chip.fill_memory(0, 134)
-    chip.read_memory(130,134)
+PAGE_SIZE=256
+def get_pages_from_file(file_name:str, fill_last_page=0xff):
+    pages=[]
+    with open(file_name, 'rb') as f:
+        while (chunk := f.read(PAGE_SIZE)) != b'':
+            pages.append(list(chunk))
+    last_page = pages[-1]
+    for i in range(PAGE_SIZE - len(last_page)):
+        last_page.append(fill_last_page)
+    return pages
 
-def readfile():
-    bytes = []
-    with open("hld_fpga_0400_0001.rpd", "rb") as f:
-        while (byte := f.read(1)):
-            bytes.append(byte)
-    return bytes
-    # Do stuff with byte.
+def test():
+    print("Erasing")
+    chip.erase_all()
+    pages = get_pages_from_file('hld_fpga_0400_0001.rpd')
+    for page_nbr,page_bytes in enumerate(pages):
+        print(f"Writing page:{page_nbr}", end='\r')
+        chip.write_page_to_flash(page_nbr, page_bytes)
+
+    print('\nVerify!')
+    for page_nbr,page_bytes in enumerate(pages):
+        print(f"Verifying page:{page_nbr}", end='\r')
+        bytes_flash=chip.get_page_from_flash(page_nbr)
+        if bytes_flash!=page_bytes:
+            print("Verify error")
+            exit(1)
+
+    print('\nSuccess!')
