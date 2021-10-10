@@ -5,10 +5,44 @@ from abc import ABC, abstractmethod
 from typing import Callable, Any
 
 
+class Runtime():
+    def __init__(self):
+        pass
+
+    def sleep(self):
+        pass
+
+    def sleep_until_next_execution(self):
+        pass
+
+    def wait(self, lambda_expression):
+        while not lambda_expression():
+            self.sleep_until_next_execution()
+
+
+class Dji():
+    def __init__(self, runtime):
+        self.runtime=runtime
+        pass
+
+    def takeoff(self):
+        print("Taking off")
+        #self.java.takeoff()
+        self.runtime.wait(lambda: self.is_flying())
+
+    def is_flying(self):
+        return True
+
+class Api:
+    def __init__(self):
+        self.runtime = Runtime()
+        self.dji = Dji(self.runtime)
+
+
 class Plugin(ABC):
     _execution_list: list[Plugin]
     _all_plugins: list[Plugin] = []
-
+    api: Api
 
     def __init__(self, plugin_name:str=None , *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -16,6 +50,7 @@ class Plugin(ABC):
         self.connections = []
         self.debug = {}
         self._execution_list = []
+        self.api = Api()
 
     def add_plugin(self, plugin: Plugin):
         self._execution_list.append(plugin)

@@ -43,7 +43,7 @@ def my_main():
 
     for plugin in Plugin._all_plugins:
         try:
-            print(plugin.plugin_name, plugin.in_speed)
+            print(plugin.plugin_name, plugin.in_speed) #in_speed doesnt exist in all objects.
         except:
             pass
 
