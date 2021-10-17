@@ -96,14 +96,26 @@ class InCourse(Interface_in):
         self.course = None
 
 class InWindowSize(Interface_in):
-    def __init__(self, in_window_size=4, *args, **kwargs):
+    def __init__(self, in_window_size:int=5, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.in_window_size = in_window_size
+        self._in_window_size = in_window_size
+
+    @property
+    def in_window_size(self):
+        return self._in_window_size
+
+    @in_window_size.setter
+    def in_window_size(self, size):
+        self._in_window_size = size
 
 
 class OutCourse(Interface_in):
     def __init__(self):
         self.course = None
+
+class OutHeight(Interface_in):
+    def __init__(self):
+        self.out_height = None
 
 
 class OutLatLon(Interface_in):

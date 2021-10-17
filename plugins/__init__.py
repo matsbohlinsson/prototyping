@@ -29,7 +29,7 @@ class Dji():
         pass
 
     def takeoff(self):
-        print("Taking off")
+        #print("Taking off")
         #self.java.takeoff()
         self.runtime.wait(lambda: self.is_flying())
 
@@ -59,7 +59,8 @@ class Plugin(ABC):
                 self.in_dict: {} = list(csv.DictReader(open(in_file)))
             if out_file:
                 self.out_file = out_file
-                self.out_writer = csv.DictWriter(open(self.out_file, 'w', ), fieldnames=['loop_counter']+self.in_vars+self.out_vars, quoting = csv.QUOTE_NONNUMERIC)
+                column_names = ['loop_counter']+self.in_vars+self.out_vars+[self.plugin.plugin_name]
+                self.out_writer = csv.DictWriter(open(self.out_file, 'w', ), fieldnames=column_names, quoting = csv.QUOTE_NONNUMERIC)
                 self.out_writer.writeheader()
 
 
@@ -93,11 +94,12 @@ class Plugin(ABC):
                 d = {}
                 d.update({'loop_counter': loop_counter})
                 for out_var in self.in_vars + self.out_vars:
-                    print({out_var: self.plugin.__getattribute__(out_var)})
                     d.update({out_var: self.plugin.__getattribute__(out_var)})
                 self.out_writer.writerow(d)
 
-        def run_test_from_file(self, verif_file: Path = None):
+        def run_test_from_file(self, verif_file: Path = None) -> []:
+            print(f"{self.plugin.plugin_name} running test with data from:{verif_file}", end=' -> ')
+            all_diff=[]
             verif_dict: {} = list(csv.DictReader(open(verif_file), quoting = csv.QUOTE_NONNUMERIC))
             for loop_nbr, verif_data in enumerate(verif_dict):
                 #print(f"Testing: {self.plugin.plugin_name}: {verif_data}")
@@ -105,12 +107,18 @@ class Plugin(ABC):
                 self.plugin.main_execution(loop_nbr)
                 diff = self._compare_output_with_dict(verif_data)
                 if diff:
+                    all_diff.append(diff)
                     print("Diff:", diff)
+            if all_diff or len(verif_dict)<10:
+                print(f'FAILED:{len(all_diff)} rows')
+            else:
+                print(f"SUCCESS {len(verif_dict)} rows")
+            return all_diff
 
 
     def __init__(self, plugin_name:str=None, csv_in: Path=None, csv_out: Path=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.plugin_name = self.__class__ if plugin_name is None else plugin_name
+        self.plugin_name = self.__class__.__name__ if plugin_name is None else plugin_name
         self.connections = []
         self.debug = {}
         self._execution_list = []
@@ -139,7 +147,7 @@ class Plugin(ABC):
             debug_info(f'{inp_obj.plugin_name}.{inp.__name__}', out(out_obj))
 
         out_obj = self
-        print(out, out_obj, inp, inp_obj)
+        #print(out, out_obj, inp, inp_obj)
         self.connections.append(lambda out=out, out_obj=out_obj, inp=inp, inp_obj=inp_obj: transfer(out, out_obj, inp, inp_obj))
 
 
