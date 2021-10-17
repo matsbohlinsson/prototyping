@@ -117,7 +117,7 @@ class Plugin(ABC):
             return all_diff
 
         def __del__(self):
-            #self.q.close()
+            self.out_writer_file.close()
             pass
 
     def __init__(self, plugin_name:str=None, csv_in: Path=None, csv_out: Path=None, *args, **kwargs):
