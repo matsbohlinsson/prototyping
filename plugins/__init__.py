@@ -60,7 +60,8 @@ class Plugin(ABC):
             if out_file:
                 self.out_file = out_file
                 column_names = ['loop_counter']+self.in_vars+self.out_vars+[self.plugin.plugin_name]
-                self.out_writer = csv.DictWriter(open(self.out_file, 'w', ), fieldnames=column_names, quoting = csv.QUOTE_NONNUMERIC)
+                self.out_writer_file = open(self.out_file, 'w')
+                self.out_writer = csv.DictWriter(self.out_writer_file, fieldnames=column_names, quoting = csv.QUOTE_NONNUMERIC)
                 self.out_writer.writeheader()
 
 
@@ -115,6 +116,9 @@ class Plugin(ABC):
                 print(f"SUCCESS {len(verif_dict)} rows")
             return all_diff
 
+        def __del__(self):
+            #self.q.close()
+            pass
 
     def __init__(self, plugin_name:str=None, csv_in: Path=None, csv_out: Path=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
