@@ -35,9 +35,6 @@ class MainPlugin(Plugin):
         return d
 
 
-    def test(self):
-        #self.test_with_csv_create_template(self.smoother, Path('./test.csv'))
-        self.smoother.csv.run_test_from_file(Path('./test.csv'))
 
 
 def my_main():
@@ -54,15 +51,11 @@ def my_main():
         except:
             pass
 
-    #CSV
-    main.test()
 
 my_main()
 
-p = Smoother(csv_in=Path('./test.csv'), csv_out=Path('./test_out.csv'))
-p.main_execution()
-p.main_execution()
-p.main_execution()
+p = Smoother(csv_out=Path('./csv/Smoother_out.csv'))
+p.csv.run_test_from_file(Path('./csv/Smoother.csv'))
 #p.csv.fetch_input_from_in_file(0)
 #p.csv.save_output_to_file()
 

@@ -59,7 +59,7 @@ class Plugin(ABC):
                 self.in_dict: {} = list(csv.DictReader(open(in_file)))
             if out_file:
                 self.out_file = out_file
-                self.out_writer = csv.DictWriter(open(self.out_file, 'w'), fieldnames=self.in_vars+self.out_vars)
+                self.out_writer = csv.DictWriter(open(self.out_file, 'w', ), fieldnames=self.in_vars+self.out_vars, quoting = csv.QUOTE_NONNUMERIC)
                 self.out_writer.writeheader()
 
 
@@ -69,11 +69,24 @@ class Plugin(ABC):
 
         def fetch_input_from_in_file(self, row_nbr: int):
             if self.in_file:
-                in_name: str
-                for in_name, value  in self.in_dict[row_nbr].items():
-                    if in_name.startswith('in_'):
-                        self.plugin.__getattribute__(in_name) # Fails if attribut doesn't exists
-                        self.plugin.__setattr__(in_name, self.str_to_nbr(value))
+                self._fetch_input_from_dict(self.in_dict[row_nbr])
+
+        def _fetch_input_from_dict(self, row: {}):
+            in_name: str
+            for in_name, value  in row.items():
+                if in_name.startswith('in_'):
+                    self.plugin.__getattribute__(in_name) # Fails if attribut doesn't exists
+                    self.plugin.__setattr__(in_name, self.str_to_nbr(value))
+
+        def _compare_output_with_dict(self, row: {}):
+            out_name: str
+            diff = {}
+            for out_name, expected  in row.items():
+                if out_name.startswith('out_'):
+                    real = self.plugin.__getattribute__(out_name) # Fails if attribut doesn't exists
+                    if expected != real:
+                        diff.update({out_name: {'real':real, 'expected':expected}})
+            return diff
 
         def save_output_to_file(self):
             if self.out_file:
@@ -84,19 +97,25 @@ class Plugin(ABC):
                 self.out_writer.writerow(d)
                 print("YY", d)
 
-
-
-
-
         def test_with_csv_create_template(self, plugin: Plugin = None, file: Path = None):
             in_vars = [attr for attr in dir(plugin) if attr.startswith('in_')]
             out_vars = [attr for attr in dir(plugin) if attr.startswith('out_')]
             with open(file.absolute(), 'w') as f:
-                writer = csv.DictWriter(f, fieldnames=in_vars + out_vars)
+                writer = csv.DictWriter(f, fieldnames=in_vars + out_vars, quoting = csv.QUOTE_NONNUMERIC)
                 writer.writeheader()
             print("QQ", in_vars, out_vars)
 
-        def run_test_from_file(self, file: Path = None):
+        def run_test_from_file(self, verif_file: Path = None):
+            verif_dict: {} = list(csv.DictReader(open(verif_file), quoting = csv.QUOTE_NONNUMERIC))
+            for loop_nbr, verif_data in enumerate(verif_dict):
+                print(f"Testing: {self.plugin.plugin_name}: {verif_data}")
+                self._fetch_input_from_dict(verif_data)
+                self.plugin.main_execution(loop_nbr)
+                diff = self._compare_output_with_dict(verif_data)
+                if diff:
+                    print("Diff:", diff)
+
+            '''
             with open(file.absolute(), 'r') as f:
                 reader = csv.DictReader(f)
                 print(reader.fieldnames)
@@ -106,6 +125,8 @@ class Plugin(ABC):
                 print("OUT", out_fields)
                 for row in reader:
                     print(row)
+            '''
+
 
     def __init__(self, plugin_name:str=None, csv_in: Path=None, csv_out: Path=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
