@@ -1,9 +1,11 @@
 class Interface_in():
-    pass
+    def __init__(self, *args, **kwargs):
+        pass
 
 
 class Interface_out():
-    pass
+    def __init__(self, *args, **kwargs):
+        pass
 
 
 class Ispeed(Interface_in):
@@ -79,6 +81,11 @@ class InHeight(Interface_in):
 class InCourse(Interface_in):
     def __init__(self):
         self.course = None
+
+class InWindowSize(Interface_in):
+    def __init__(self, in_window_size=4, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.in_window_size = in_window_size
 
 
 class OutCourse(Interface_in):

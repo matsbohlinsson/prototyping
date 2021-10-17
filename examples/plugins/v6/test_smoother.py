@@ -20,7 +20,7 @@ class MainPlugin(Plugin):
         mover = Mover(plugin_name='Mover', csv_out='./4st_out.csv')
 
         # Connect nodes
-        self.smoother = Smoother(plugin_name='SpeedSmoother', window_size=20, speed_change_limit=20, csv_out='./1st_out.csv')
+        self.smoother = Smoother(plugin_name='SpeedSmoother', in_window_size=20, speed_change_limit=20, csv_out='./1st_out.csv')
         generator_speed.connect(self.smoother, Generator.out_value, Smoother.in_speed)
         generator_height.connect(mover,   Generator.out_value, Mover.in_height)
         self.smoother.connect(mover, Smoother.out_speed, Mover.in_speed)
@@ -54,6 +54,8 @@ def my_main():
 
 my_main()
 
+p = Smoother(csv_out=Path('./csv/Smoother_out.csv'))
+p.csv.run_test_from_file(Path('./csv/Smoother.csv'))
 p = Smoother(csv_out=Path('./csv/Smoother_out.csv'))
 p.csv.run_test_from_file(Path('./csv/Smoother.csv'))
 #p.csv.fetch_input_from_in_file(0)
