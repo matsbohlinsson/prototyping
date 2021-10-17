@@ -1,11 +1,24 @@
-class Interface_in():
+
+class Interface:
+    _observers: []
     def __init__(self, *args, **kwargs):
+        self._observers = []
         pass
 
+    def _value_changed(self, old, new):
+        if old != new:
+            for callback in self._observers:
+                callback(new)
 
-class Interface_out():
+class Interface_in(Interface):
     def __init__(self, *args, **kwargs):
-        pass
+        super().__init__(*args, **kwargs)
+
+
+
+class Interface_out(Interface):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
 
 class Ispeed(Interface_in):
@@ -92,7 +105,8 @@ class InHeight(Interface_in):
         self._in_height = height
 
 class InCourse(Interface_in):
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.course = None
 
 class InWindowSize(Interface_in):
@@ -106,11 +120,17 @@ class InWindowSize(Interface_in):
 
     @in_window_size.setter
     def in_window_size(self, size):
+        self._value_changed(self._in_window_size, size)
         self._in_window_size = size
+
+    def onchange_in_window_size(self, callback):
+        self._observers.append(callback)
+
 
 
 class OutCourse(Interface_in):
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.course = None
 
 class OutHeight(Interface_in):
