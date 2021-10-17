@@ -13,7 +13,7 @@ class Mover(Plugin, InSpeed, InHeight):
         self.last_location=123
 
     @on_scheduler_fast_loop
-    def main_loop(self):
+    def main_loop(self, loop_counter:int):
         print(f'Got in_speed:{self.in_speed}')
         print(f'Got in_height:{self.in_height}')
         self.api.dji.takeoff()

@@ -15,9 +15,9 @@ class MainPlugin(Plugin):
         super().__init__(*args, **kwargs)
 
         # Create nodes
-        generator_speed = Generator(plugin_name='SpeedGenerator', expression=lambda loop_index: math.sin(loop_index / 100) * 100)
-        generator_height = Generator(plugin_name='HeightGenerator', expression=lambda loop_index: math.cos(loop_index / 100) * 100)
-        mover = Mover(plugin_name='Mover')
+        generator_speed = Generator(plugin_name='SpeedGenerator', expression=lambda loop_index: math.sin(loop_index / 100) * 100, csv_out='./2st_out.csv')
+        generator_height = Generator(plugin_name='HeightGenerator', expression=lambda loop_index: math.cos(loop_index / 100) * 100, csv_out='./3st_out.csv' )
+        mover = Mover(plugin_name='Mover', csv_out='./4st_out.csv')
 
         # Connect nodes
         self.smoother = Smoother(plugin_name='SpeedSmoother', window_size=20, speed_change_limit=20, csv_out='./1st_out.csv')
@@ -30,8 +30,8 @@ class MainPlugin(Plugin):
         self.add_plugin(generator_height)
         self.add_plugin(mover)
 
-    def main_loop(self):
-        d = self.run_all()
+    def main_loop(self, loop_counter: int):
+        d = self.run_all(loop_counter)
         return d
 
 
@@ -44,7 +44,7 @@ def my_main():
     debug = []
     main = MainPlugin(plugin_name='main')
     for i in range(0,111):
-        d = main.main_loop()
+        d = main.main_loop(i)
         debug.append(d)
     print(debug)
 

@@ -17,7 +17,7 @@ class Smoother(Plugin, InSpeed, OutSpeed):
         self.init_history_window()
 
     @on_scheduler_fast_loop
-    def main_loop(self):
+    def main_loop(self, loop_counter:int):
         speed_avg = self.calcsmoothing_speed(self.speed_history, self.in_speed, self.speed_change_limit)
         self.out_speed=speed_avg
 

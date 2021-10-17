@@ -14,6 +14,6 @@ class Generator(Plugin, OutValue):
         self.counter = 0
 
     @on_scheduler_fast_loop
-    def main_loop(self):
+    def main_loop(self, loop_counter:int):
         self.out_value=self.function(self.counter)
         self.counter=self.counter+1

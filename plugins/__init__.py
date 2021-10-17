@@ -120,10 +120,10 @@ class Plugin(ABC):
         self._execution_list.append(plugin)
         Plugin._all_plugins.append(plugin)
 
-    def run_all(self):
+    def run_all(self, loop_counter: int):
         debug = {}
         for plugin in self._execution_list:
-            d = plugin.main_execution()
+            d = plugin.main_execution(loop_counter)
             debug.update(d)
         return debug
 
@@ -147,16 +147,16 @@ class Plugin(ABC):
         self._connect(inp_obj, out.fget, inp.fset)
 
 
-    def main_execution(self) -> {}:
+    def main_execution(self, loop_counter: int) -> {}:
         self.debug = {}
         self.csv.fetch_input_from_in_file(row_nbr=1)
-        self.main_loop()
+        self.main_loop(loop_counter)
         self.csv.save_output_to_file()
         for connection in self.connections:
             connection()
         return self.debug
 
     @abstractmethod
-    def main_loop(self):
+    def main_loop(self, loop_counter: int):
         pass
 
