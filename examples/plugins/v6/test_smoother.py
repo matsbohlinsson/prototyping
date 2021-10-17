@@ -56,8 +56,8 @@ my_main()
 
 p = Smoother(csv_out=Path('./csv/Smoother_out.csv'))
 p.csv.run_test_from_file(Path('./csv/Smoother.csv'))
-p = Smoother(csv_out=Path('./csv/Smoother_out.csv'))
-p.csv.run_test_from_file(Path('./csv/Smoother.csv'))
+#p = Smoother(csv_out=Path('./csv/Smoother_out.csv'))
+#p.csv.run_test_from_file(Path('./csv/Smoother.csv'))
 #p.csv.fetch_input_from_in_file(0)
 #p.csv.save_output_to_file()
 

@@ -65,6 +65,19 @@ class InSpeed(Interface_in):
     def in_speed(self, speed):
         self._in_speed = speed
 
+class InDeltaMax(Interface_in):
+    def __init__(self, in_delta_max=10, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.in_delta_max = in_delta_max
+
+    @property
+    def in_speed(self):
+        return self._in_speed
+
+    @in_speed.setter
+    def in_speed(self, speed):
+        self._in_speed = speed
+
 class InHeight(Interface_in):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
