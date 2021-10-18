@@ -12,7 +12,11 @@ class Smoother(Plugin, InSpeed, InDeltaMax, InWindowSize, OutSpeed):
         super().__init__(*args, **kwargs)
         speed = self.in_speed if self.in_speed is not None else 0
         self.speed_history = [speed] * self.in_window_size
-        self.onchange_in_window_size(lambda x: print(f'Changed:{x}'))
+        self.onchange_in_window_size(self.window_size_change)
+
+    def  window_size_change(self, x):
+        if len(self.speed_history)>self.in_window_size:
+            self.speed_history.pop(0)
 
     def main_loop(self, loop_counter:int):
         self.speed_history.append(self.in_speed)

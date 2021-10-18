@@ -119,9 +119,10 @@ class InWindowSize(Interface_in):
         return self._in_window_size
 
     @in_window_size.setter
-    def in_window_size(self, size):
-        self._value_changed(self._in_window_size, size)
-        self._in_window_size = size
+    def in_window_size(self, new):
+        old = self._in_window_size
+        self._in_window_size = new
+        self._value_changed(old, new)
 
     def onchange_in_window_size(self, callback):
         self._observers.append(callback)

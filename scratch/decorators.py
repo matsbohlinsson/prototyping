@@ -54,3 +54,7 @@ print(myclass.mycallback.__is_event)
 #myfunc2._event_info['prototype']("hej")
 
 myclass.mycallback._event_info['prototype']("hej2")
+
+setattr(myclass, "__is_event", True )
+#myclass.__is_event=True
+print(myclass.__is_event)
