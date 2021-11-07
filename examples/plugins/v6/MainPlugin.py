@@ -6,7 +6,6 @@ from examples.plugins.v6.Mover import Mover
 from examples.plugins.v6.Smoother import Smoother
 from examples.plugins.v6.Generator import Generator
 from examples.plugins.v6 import OutSpeed, OutHeight
-import matplotlib.pyplot as plt
 
 from plugins import Plugin
 
@@ -36,3 +35,4 @@ class MainPlugin(Plugin, OutSpeed, OutHeight):
         self.out_height = self.mover.in_height
         self.out_speed = self.mover.in_speed
         return d
+
