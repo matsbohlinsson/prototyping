@@ -5,12 +5,12 @@ from pathlib import Path
 from examples.plugins.v6.Mover import Mover
 from examples.plugins.v6.Smoother import Smoother
 from examples.plugins.v6.Generator import Generator
-from examples.plugins.v6 import OutSpeed, OutHeight
+from examples.plugins.v6 import OutSpeed, OutHeight, InSpeed
 
 from plugins import Plugin
 
 
-class MainPlugin(Plugin, OutSpeed, OutHeight):
+class MainPlugin(Plugin, InSpeed, OutSpeed):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -26,6 +26,11 @@ class MainPlugin(Plugin, OutSpeed, OutHeight):
         self.smoother.connect(self.mover, Mover.in_speed, Smoother.out_speed)  #self.mover.in_speed = self.smoother.out_speed
         
         self.mover.connect(self, MainPlugin.out_speed, Mover.in_speed)  #self.out_speed = self.mover.in_speed
+
+        #remove testdata
+        #self.generator_speed.connect(self, MainPlugin.in_speed, Generator.out_value)
+
+        self.in_speed = self.smoother.in_speed
 
         # Schedule execution
         self.add_plugin(self.generator_speed)
