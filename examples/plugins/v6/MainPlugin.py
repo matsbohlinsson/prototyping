@@ -21,18 +21,19 @@ class MainPlugin(Plugin, OutSpeed, OutHeight):
 
         # Connect nodes
         self.smoother = Smoother(plugin_name='SpeedSmoother', in_window_size=20, speed_change_limit=20, csv_out='./1st_out.csv')
-        self.generator_speed.connect(self.smoother, Generator.out_value, Smoother.in_speed)
-        self.generator_height.connect(self.mover,   Generator.out_value, Mover.in_height)
-        self.smoother.connect(self.mover, Smoother.out_speed, Mover.in_speed)
+        self.generator_speed.connect(self.smoother, Smoother.in_speed, Generator.out_value)
+        self.generator_height.connect(self.mover, Mover.in_height, Generator.out_value)
+        self.smoother.connect(self.mover, Mover.in_speed, Smoother.out_speed)  #self.mover.in_speed = self.smoother.out_speed
+        
+        self.mover.connect(self, MainPlugin.out_speed, Mover.in_speed)  #self.out_speed = self.mover.in_speed
+
         # Schedule execution
         self.add_plugin(self.generator_speed)
         self.add_plugin(self.smoother)
         self.add_plugin(self.generator_height)
         self.add_plugin(self.mover)
+        self.add_plugin(self)
 
     def main_loop(self, loop_counter: int):
-        d = self.run_all(loop_counter)
-        self.out_height = self.mover.in_height
-        self.out_speed = self.mover.in_speed
-        return d
-
+        print(f'{self.out_speed, self.mover.in_speed}')
+        pass

@@ -105,7 +105,7 @@ class Plugin(ABC):
             for loop_nbr, verif_data in enumerate(verif_dict):
                 #print(f"Testing: {self.plugin.plugin_name}: {verif_data}")
                 self._fetch_input_from_dict(verif_data)
-                self.plugin.main_execution(loop_nbr)
+                self.plugin.run_all(loop_nbr)
                 diff = self._compare_output_with_dict(verif_data)
                 if diff:
                     all_diff.append(diff)
@@ -156,7 +156,7 @@ class Plugin(ABC):
 
 
 
-    def connect(self, inp_obj: Plugin, out , inp):
+    def connect(self, inp_obj: Plugin, inp, out):
         self._connect(inp_obj, out.fget, inp.fset)
 
 

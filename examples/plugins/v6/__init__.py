@@ -128,25 +128,35 @@ class InWindowSize(Interface_in):
         self._observers.append(callback)
 
 
-
 class OutCourse(Interface_in):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.course = None
 
+
 class OutHeight(Interface_in):
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.out_height = None
+    @property
+    def out_height(self, *args, **kwargs):
+        return self._out_height
+
+    @out_height.setter
+    def out_height(self, height, *args, **kwargs):
+        self._out_height = height
 
 
 class OutLatLon(Interface_in):
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.out_lat = None
         self.out_lon = None
 
 
 class InLatLon(Interface_in):
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.in_lat = None
         self.in_lon = None
 

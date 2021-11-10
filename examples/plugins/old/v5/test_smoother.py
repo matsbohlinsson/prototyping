@@ -37,9 +37,9 @@ def test_smoother():
     mover = Mover(plugin_name='Mover')
 
     # Connect nodes
-    generator_speed.connect(smoother, Generator.out_value, Smoother.in_speed)
-    generator_height.connect(mover,   Generator.out_value, Mover.in_height)
-    smoother.connect(mover,           Smoother.out_speed,  Mover.in_speed)
+    generator_speed.connect(smoother, Smoother.in_speed, Generator.out_value)
+    generator_height.connect(mover, Mover.in_height, Generator.out_value)
+    smoother.connect(mover, Mover.in_speed, Smoother.out_speed)
 
     def foo(x: object) -> object:
         pass
