@@ -36,12 +36,9 @@ class MainPlugin(Plugin, InSpeed, OutSpeed):
         self.add_plugin(self.smoother)
         self.add_plugin(self.generator_height)
         self.add_plugin(self.mover)
-        self.add_plugin(self) # This should be executed last
 
     def connect_external_inputs(self):
         self.smoother.in_speed = self.in_speed
 
     def main_loop(self, loop_counter: int):
-        #self.smoother.in_speed = self.in_speed
-        #print(f'{self.smoother.in_speed, self.mover.in_speed, self.out_speed,}')
         pass
