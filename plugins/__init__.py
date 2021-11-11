@@ -135,11 +135,11 @@ class Plugin(ABC):
 
     def run_all(self, loop_counter: int):
         debug = {}
+        self.connect_external_inputs()
         for plugin in self._execution_list:
             d = plugin.main_execution(loop_counter)
             debug.update(d)
         return debug
-
 
     def _connect(self, inp_obj: Plugin, out: Callable[[Any], Any], inp: Callable[[Any], Any]):
         def debug_info(connection_name:str, value):
@@ -154,22 +154,23 @@ class Plugin(ABC):
         #print(out, out_obj, inp, inp_obj)
         self._connections.append(lambda out=out, out_obj=out_obj, inp=inp, inp_obj=inp_obj: transfer(out, out_obj, inp, inp_obj))
 
-
-
     def connect(self, inp_obj: Plugin, inp, out):
         self._connect(inp_obj, out.fget, inp.fset)
-
 
     def main_execution(self, loop_counter: int) -> {}:
         self.debug = {}
         self.csv.fetch_input_from_in_file(loop_counter)
         self.main_loop(loop_counter)
-        self.csv.save_output_to_file(loop_counter)
         for connection in self._connections:
             connection()
+        self.csv.save_output_to_file(loop_counter)
         return self.debug
 
     @abstractmethod
     def main_loop(self, loop_counter: int):
         pass
+
+    def connect_external_inputs(self):
+        pass
+
 
