@@ -43,5 +43,5 @@ class MainPlugin(Plugin, InSpeed, OutSpeed):
 
     def main_loop(self, loop_counter: int):
         #self.smoother.in_speed = self.in_speed
-        print(f'{self.smoother.in_speed, self.mover.in_speed, self.out_speed,}')
+        #print(f'{self.smoother.in_speed, self.mover.in_speed, self.out_speed,}')
         pass

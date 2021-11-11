@@ -136,6 +136,8 @@ class Plugin(ABC):
     def run_all(self, loop_counter: int):
         debug = {}
         self.connect_external_inputs()
+        if not self._execution_list:
+            self.add_plugin(self)
         for plugin in self._execution_list:
             d = plugin.main_execution(loop_counter)
             debug.update(d)
