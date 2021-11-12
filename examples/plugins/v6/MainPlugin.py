@@ -5,9 +5,7 @@ from pathlib import Path
 from examples.plugins.v6.Mover import Mover
 from examples.plugins.v6.Smoother import Smoother
 from examples.plugins.v6.Generator import Generator
-from examples.plugins.v6 import OutSpeed, OutHeight, InSpeed
-
-from plugins import Plugin
+from examples.plugins.v6 import OutSpeed, OutHeight, InSpeed, Plugin
 
 
 class MainPlugin(Plugin, InSpeed, OutSpeed):
