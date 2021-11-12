@@ -1,11 +1,9 @@
-import csv
 import math
-from pathlib import Path
 
-from examples.plugins.v6.Mover import Mover
+from examples.plugins.v6.nodes.Mover import Mover
 from examples.plugins.v6.Smoother import Smoother
-from examples.plugins.v6.Generator import Generator
-from examples.plugins.v6 import OutSpeed, OutHeight, InSpeed, Plugin
+from examples.plugins.v6.nodes.Generator import Generator
+from examples.plugins.v6 import OutSpeed, InSpeed, Plugin
 
 
 class MainPlugin(Plugin, InSpeed, OutSpeed):
