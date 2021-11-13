@@ -265,7 +265,7 @@ class Plugin(ABC):
             for loop_nbr, verif_data in enumerate(verif_dict):
                 #print(f"Testing: {self.plugin.plugin_name}: {verif_data}")
                 self._fetch_input_from_dict(verif_data)
-                self.plugin.run_all(loop_nbr)
+                self.plugin.execute(loop_nbr)
                 diff = self._compare_output_with_dict(verif_data)
                 if diff:
                     all_diff.append(diff)
@@ -280,7 +280,7 @@ class Plugin(ABC):
             self.out_writer_file.close()
             pass
 
-    def __init__(self, plugin_name:str=None, csv_in: Path=None, csv_out: Path=None, *args, **kwargs):
+    def __init__(self, plugin_name:str=None, csv_in: Path=None, csv_out: Path=None, parent:Plugin = None, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._plugin_name = self.__class__.__name__ if plugin_name is None else plugin_name
         self._connections = []
@@ -293,12 +293,13 @@ class Plugin(ABC):
         self._execution_list.append(plugin)
         Plugin._all_plugins.append(plugin)
 
-    def run_all(self, loop_counter: int):
+    def execute(self, loop_counter: int):
         debug = {}
         self.connect_external_inputs()
         if not self._execution_list: # Fix for not have to add yourself. Troubles when plugin contains many plugin with connect_external_inputs
             self.add_plugin(self)
         for plugin in self._execution_list:
+            print(f"Executing:{plugin._plugin_name}")
             d = plugin.main_execution(loop_counter)
             debug.update(d)
         return debug
