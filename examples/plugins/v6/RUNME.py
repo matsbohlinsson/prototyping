@@ -6,6 +6,14 @@ from examples.plugins.v6.nodes.Generator import Generator
 from examples.plugins.v6.nodes.container_of_plugins import Container_of_plugins
 from examples.plugins.v6.nodes.container_of_container import Container_of_container
 
+'''
+TODO
+container of containers
+list all parent 'xxx/xxx/Container_of_plugins/HeightGenerator'
+save csv files for all plugins in dir tree structure
+threads
+dont call hanged processes
+'''
 if __name__ == "__main__":
     print("Running tests:")
     if 0:
