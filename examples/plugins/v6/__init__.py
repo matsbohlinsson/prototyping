@@ -206,6 +206,7 @@ class Plugin(ABC):
     _execution_list: list[Plugin]
     _all_plugins: list[Plugin] = []
     api: Api
+    __names = []
 
     class Csv:
         def __init__(self, plugin:Plugin, in_file: Path, out_file: Path):
@@ -280,14 +281,28 @@ class Plugin(ABC):
             self.out_writer_file.close()
             pass
 
-    def __init__(self, plugin_name:str=None, csv_in: Path=None, csv_out: Path=None, parent:Plugin = None, *args, **kwargs):
+
+    def __init__(self, parent:Plugin, plugin_name:str=None, csv_in: Path=None, csv_out: Path=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self._plugin_name = self.__class__.__name__ if plugin_name is None else plugin_name
+        self._plugin_name = self.get_unique_name(plugin_name)
         self._connections = []
         self.debug = {}
         self._execution_list = []
         self.api = Api()
         self.csv = Plugin.Csv(self, csv_in, csv_out)
+        self.parent = parent
+
+    def get_unique_name(cls, plugin_name):
+        name = cls.__class__.__name__ if plugin_name is None else plugin_name
+        if name in cls.__names:
+            name_orig = name
+            i=0
+            while name in cls.__names:
+                i=i+1
+                name = name_orig + f'_{i}'
+            cls.__names.append(name)
+        return name
+
 
     def add_plugin(self, plugin: Plugin):
         self._execution_list.append(plugin)

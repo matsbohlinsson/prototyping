@@ -18,11 +18,10 @@ if __name__ == "__main__":
         Container_of_container(csv_out=Path('./csv_out/Container_of_container.csv')).csv.run_test_from_file(Path(
             'csv_testdata/container_of_container.csv'))
 
-
-    Smoother(csv_out=Path('./csv_out/Smoother_out.csv')).csv.run_test_from_file(Path('csv_testdata/Smoother.csv'))
-    Generator(csv_out=Path('./csv_out/Generator_out.csv'), expression=lambda loop_index: math.sin(loop_index / 100) * 100).csv.run_test_from_file(Path(
+    Smoother(parent=None, csv_out=Path('./csv_out/Smoother_out.csv')).csv.run_test_from_file(Path('csv_testdata/Smoother.csv'))
+    Generator(parent=None, csv_out=Path('./csv_out/Generator_out.csv'), expression=lambda loop_index: math.sin(loop_index / 100) * 100).csv.run_test_from_file(Path(
         'csv_testdata/GeneratorSin.csv'))
-    Container_of_plugins(csv_out=Path('./csv_out/Container_of_plugins.csv')).csv.run_test_from_file(Path(
+    Container_of_plugins(parent=None,csv_out=Path('./csv_out/Container_of_plugins.csv')).csv.run_test_from_file(Path(
         'csv_testdata/container_of_plugins.csv'))
 
 
