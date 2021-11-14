@@ -210,9 +210,10 @@ class Plugin(ABC):
     __names = []
 
     class Csv:
-        def __init__(self, plugin:Plugin, in_file: Path, out_dir: Path):
-            out_dir.mkdir(parents=True, exist_ok=True)
-            out_file = Path(out_dir.name+'/in_out.csv')
+        def __init__(self, plugin:Plugin, in_file: Path, out_dir: str):
+            Path(out_dir).mkdir(parents=True, exist_ok=True)
+            out_file = Path(out_dir+'/in_out.csv')
+            out_file.touch()
             self.out_file = None
             self.in_file = None
             self.in_vars = [attr for attr in dir(plugin) if attr.startswith('in_')]
@@ -294,7 +295,7 @@ class Plugin(ABC):
         self.api = Api()
         self.parent = parent
         self._plugin_name = self.get_unique_name(plugin_name)
-        self.csv = Plugin.Csv(self, csv_in, Path(LOGDIR.name+'/'+self._plugin_name))
+        self.csv = Plugin.Csv(self, csv_in, LOGDIR.name+'/'+self._plugin_name)
 
     def get_unique_name(self, plugin_name):
         name = self.__class__.__name__ if plugin_name is None else plugin_name
