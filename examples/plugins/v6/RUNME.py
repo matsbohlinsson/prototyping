@@ -8,8 +8,12 @@ from examples.plugins.v6.nodes.container_of_container import Container_of_contai
 
 '''
 TODO
-threads
-dont call hanged processes
+logs in plugin to each csv file column
+logs all logs in one file
+automatsik generering av testdata.
+exception i loops
+
+
 '''
 if __name__ == "__main__":
     print("Running tests:")
