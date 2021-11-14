@@ -12,11 +12,11 @@ class Container_of_plugins(Plugin, InSpeed, OutSpeed):
 
         # Create nodes
         #self.generator_speed = Generator(plugin_name='SpeedGenerator', expression=lambda loop_index: math.sin(loop_index / 100) * 100, csv_out='./2st_out.csv_testdata')
-        self.generator_height = Generator(parent=self, plugin_name='HeightGenerator', expression=lambda loop_index: math.cos(loop_index / 100) * 100, csv_out='./3st_out.csv_testdata' )
-        self.mover = Mover(parent=self,  plugin_name='Mover', csv_out='./4st_out.csv_testdata')
+        self.generator_height = Generator(parent=self, plugin_name='HeightGenerator', expression=lambda loop_index: math.cos(loop_index / 100) * 100 )
+        self.mover = Mover(parent=self,  plugin_name='Mover')
 
         # Connect nodes
-        self.smoother = Smoother(parent=self, plugin_name='SpeedSmoother', in_window_size=20, speed_change_limit=20, csv_out='./1st_out.csv_testdata')
+        self.smoother = Smoother(parent=self, plugin_name='SpeedSmoother', in_window_size=20, speed_change_limit=20)
         #self.generator_speed.connect(self.smoother, Smoother.in_speed, Generator.out_value)
         self.generator_height.connect(self.mover, Mover.in_height, Generator.out_value)
         self.smoother.connect(self.mover, Mover.in_speed, Smoother.out_speed)  #self.mover.in_speed = self.smoother.out_speed

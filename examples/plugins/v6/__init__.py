@@ -4,6 +4,7 @@ from abc import ABC, abstractmethod
 from pathlib import Path
 from typing import Callable, Any
 
+LOGDIR = Path('./csv_out/')
 
 class Interface:
     _observers: []
@@ -209,7 +210,9 @@ class Plugin(ABC):
     __names = []
 
     class Csv:
-        def __init__(self, plugin:Plugin, in_file: Path, out_file: Path):
+        def __init__(self, plugin:Plugin, in_file: Path, out_dir: Path):
+            out_dir.mkdir(parents=True, exist_ok=True)
+            out_file = Path(out_dir.name+'/in_out.csv')
             self.out_file = None
             self.in_file = None
             self.in_vars = [attr for attr in dir(plugin) if attr.startswith('in_')]
@@ -265,6 +268,7 @@ class Plugin(ABC):
             verif_dict: {} = list(csv.DictReader(open(verif_file), quoting = csv.QUOTE_NONNUMERIC))
             for loop_nbr, verif_data in enumerate(verif_dict):
                 #print(f"Testing: {self.plugin.plugin_name}: {verif_data}")
+                print("New clock")
                 self._fetch_input_from_dict(verif_data)
                 self.plugin.execute(loop_nbr)
                 diff = self._compare_output_with_dict(verif_data)
@@ -282,7 +286,7 @@ class Plugin(ABC):
             pass
 
 
-    def __init__(self, parent:Plugin, plugin_name:str=None, csv_in: Path=None, csv_out: Path=None, *args, **kwargs):
+    def __init__(self, parent:Plugin, plugin_name:str=None, csv_in: Path=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._connections = []
         self.debug = {}
@@ -290,7 +294,7 @@ class Plugin(ABC):
         self.api = Api()
         self.parent = parent
         self._plugin_name = self.get_unique_name(plugin_name)
-        self.csv = Plugin.Csv(self, csv_in, csv_out)
+        self.csv = Plugin.Csv(self, csv_in, Path(LOGDIR.name+'/'+self._plugin_name))
 
     def get_unique_name(self, plugin_name):
         name = self.__class__.__name__ if plugin_name is None else plugin_name
@@ -313,12 +317,13 @@ class Plugin(ABC):
     def execute(self, loop_counter: int):
         debug = {}
         self.connect_external_inputs()
-        if not self._execution_list: # Fix for not have to add yourself. Troubles when plugin contains many plugin with connect_external_inputs
-            self.add_plugin(self)
         for plugin in self._execution_list:
             print(f"Executing:{plugin._plugin_name}")
-            d = plugin.main_execution(loop_counter)
+            #d = plugin.main_execution(loop_counter)
+            d = plugin.execute(loop_counter)
             debug.update(d)
+        print(f"Executing:{self._plugin_name}")
+        self.execute_self(loop_counter)
         return debug
 
     def _connect(self, inp_obj: Plugin, out: Callable[[Any], Any], inp: Callable[[Any], Any]):
@@ -337,7 +342,7 @@ class Plugin(ABC):
     def connect(self, inp_obj: Plugin, inp, out):
         self._connect(inp_obj, out.fget, inp.fset)
 
-    def main_execution(self, loop_counter: int) -> {}:
+    def execute_self(self, loop_counter: int) -> {}:
         self.debug = {}
         self.csv.fetch_input_from_in_file(loop_counter)
         self.main_loop(loop_counter)
