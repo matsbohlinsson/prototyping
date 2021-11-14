@@ -4,7 +4,7 @@ from abc import ABC, abstractmethod
 from pathlib import Path
 from typing import Callable, Any
 
-LOGDIR = Path('./csv_out/')
+LOGDIR = Path('./logs/')
 
 class Interface:
     _observers: []
@@ -208,6 +208,7 @@ class Plugin(ABC):
     _all_plugins: list[Plugin] = []
     api: Api
     __names = []
+    clock_tick: int
 
     class Csv:
         def __init__(self, plugin:Plugin, in_file: Path, out_dir: str):
@@ -224,7 +225,7 @@ class Plugin(ABC):
                 self.in_dict: {} = list(csv.DictReader(open(in_file)))
             if out_file:
                 self.out_file = out_file
-                column_names = ['loop_counter']+self.in_vars+self.out_vars+[self.plugin._plugin_name]
+                column_names = ['clock_tick']+self.in_vars+self.out_vars+[self.plugin._plugin_name]
                 self.out_writer_file = open(self.out_file, 'w')
                 self.out_writer = csv.DictWriter(self.out_writer_file, fieldnames=column_names, quoting = csv.QUOTE_NONNUMERIC)
                 self.out_writer.writeheader()
@@ -255,10 +256,10 @@ class Plugin(ABC):
                         diff.update({out_name: {'real':real, 'expected':expected}})
             return diff
 
-        def save_output_to_file(self, loop_counter: int):
+        def save_output_to_file(self, clock_tick):
             if self.out_file:
                 d = {}
-                d.update({'loop_counter': loop_counter})
+                d.update({'clock_tick': clock_tick})
                 for out_var in self.in_vars + self.out_vars:
                     d.update({out_var: self.plugin.__getattribute__(out_var)})
                 self.out_writer.writerow(d)
@@ -267,11 +268,12 @@ class Plugin(ABC):
             print(f"{self.plugin._plugin_name} running test with data from:{verif_file}", end=' -> ')
             all_diff=[]
             verif_dict: {} = list(csv.DictReader(open(verif_file), quoting = csv.QUOTE_NONNUMERIC))
-            for loop_nbr, verif_data in enumerate(verif_dict):
+            for clock_tick, verif_data in enumerate(verif_dict):
+                self.plugin.clock_tick = clock_tick
                 #print(f"Testing: {self.plugin.plugin_name}: {verif_data}")
                 print("New clock")
                 self._fetch_input_from_dict(verif_data)
-                self.plugin.execute(loop_nbr)
+                self.plugin.execute()
                 diff = self._compare_output_with_dict(verif_data)
                 if diff:
                     all_diff.append(diff)
@@ -289,6 +291,7 @@ class Plugin(ABC):
 
     def __init__(self, parent:Plugin, plugin_name:str=None, csv_in: Path=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.clock_tick = 0
         self._connections = []
         self.debug = {}
         self._execution_list = []
@@ -315,16 +318,15 @@ class Plugin(ABC):
         self._execution_list.append(plugin)
         Plugin._all_plugins.append(plugin)
 
-    def execute(self, loop_counter: int):
+    def execute(self):
         debug = {}
         self.connect_external_inputs()
         for plugin in self._execution_list:
             print(f"Executing:{plugin._plugin_name}")
-            #d = plugin.main_execution(loop_counter)
-            d = plugin.execute(loop_counter)
+            d = plugin.execute()
             debug.update(d)
         print(f"Executing:{self._plugin_name}")
-        self.execute_self(loop_counter)
+        self.execute_self()
         return debug
 
     def _connect(self, inp_obj: Plugin, out: Callable[[Any], Any], inp: Callable[[Any], Any]):
@@ -343,17 +345,17 @@ class Plugin(ABC):
     def connect(self, inp_obj: Plugin, inp, out):
         self._connect(inp_obj, out.fget, inp.fset)
 
-    def execute_self(self, loop_counter: int) -> {}:
+    def execute_self(self) -> {}:
         self.debug = {}
-        self.csv.fetch_input_from_in_file(loop_counter)
-        self.main_loop(loop_counter)
+        self.csv.fetch_input_from_in_file(self.clock_tick)
+        self.main_loop()
         for connection in self._connections:
             connection()
-        self.csv.save_output_to_file(loop_counter)
+        self.csv.save_output_to_file(self.clock_tick)
         return self.debug
 
     @abstractmethod
-    def main_loop(self, loop_counter: int):
+    def main_loop(self):
         pass
 
     def connect_external_inputs(self):

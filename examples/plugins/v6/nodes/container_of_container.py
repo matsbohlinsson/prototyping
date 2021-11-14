@@ -19,7 +19,7 @@ class Container_of_container(Plugin, InSpeed, OutSpeed):
         self.container_of_plugins.connect(self, Container_of_container.out_speed, Container_of_plugins.out_speed)
 
 
-    def main_loop(self, loop_counter: int):
+    def main_loop(self):
         pass
 
     def connect_external_inputs(self):

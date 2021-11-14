@@ -36,5 +36,5 @@ class Container_of_plugins(Plugin, InSpeed, OutSpeed):
     def connect_external_inputs(self):
         self.smoother.in_speed = self.in_speed
 
-    def main_loop(self, loop_counter: int):
+    def main_loop(self):
         pass

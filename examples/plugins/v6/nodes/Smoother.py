@@ -17,7 +17,7 @@ class Smoother(Plugin, InSpeed, InDeltaMax, InWindowSize, OutSpeed):
         if len(self.speed_history)>self.in_window_size:
             self.speed_history.pop(0)
 
-    def main_loop(self, loop_counter:int):
+    def main_loop(self):
         self.speed_history.append(self.in_speed)
         if len(self.speed_history)>self.in_window_size:
             self.speed_history.pop(0)

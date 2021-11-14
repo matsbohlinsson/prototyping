@@ -14,5 +14,5 @@ class Mover(Plugin, InSpeed, InHeight, OutSpeed):
         self.connect(self, Mover.out_speed, Mover.in_speed)
 
     @on_scheduler_fast_loop
-    def main_loop(self, loop_counter: int):
+    def main_loop(self):
         self.api.dji.takeoff()

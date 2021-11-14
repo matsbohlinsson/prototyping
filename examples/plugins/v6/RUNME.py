@@ -8,7 +8,6 @@ from examples.plugins.v6.nodes.container_of_container import Container_of_contai
 
 '''
 TODO
-save csv files for all plugins in dir tree structure
 threads
 dont call hanged processes
 '''
@@ -17,7 +16,7 @@ if __name__ == "__main__":
     if 0:
         c = Container_of_container(parent=None, csv_out=Path('../v6/csv_out/Container_of_container.csv'))
         for i in range(10):
-            c.execute(i)
+            c.execute()
         exit(0)
 
     Container_of_container(parent=None).csv.run_test_from_file(Path(
