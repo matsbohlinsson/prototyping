@@ -263,7 +263,7 @@ class Csv:
         all_diff=[]
         verif_dict: {} = list(csv.DictReader(open(verif_file), quoting = csv.QUOTE_NONNUMERIC))
         for clock_tick, verif_data in enumerate(verif_dict):
-            self.plugin.clock_tick = clock_tick
+            Plugin.clock_tick = clock_tick
             #print(f"Testing: {self.plugin.plugin_name}: {verif_data}")
             print("New clock")
             self._fetch_input_from_dict(verif_data)
@@ -289,13 +289,12 @@ class Plugin(ABC):
     _all_plugins: list[Plugin] = []
     api: Api
     __names = []
-    clock_tick: int
+    clock_tick: int = 0
     running: bool
 
 
     def __init__(self, parent:Plugin, plugin_name:str=None, csv_in: Path=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.clock_tick = 0
         self._connections = []
         self.debug = {}
         self._execution_list = []
@@ -328,10 +327,10 @@ class Plugin(ABC):
         debug = {}
         self.connect_external_inputs()
         for plugin in self._execution_list:
-            print(f"Executing:{plugin._plugin_name}")
+            #print(f"{self._plugin_name} Executing:{plugin._plugin_name}")
             d = plugin.execute()
             debug.update(d)
-        print(f"Executing:{self._plugin_name}")
+        print(f"{self._plugin_name} Executing_self:{self._plugin_name}")
         self.execute_self()
         return debug
 
@@ -359,7 +358,7 @@ class Plugin(ABC):
 
     def execute_self(self) -> {}:
         self.debug = {}
-        self.csv.fetch_input_from_in_file(self.clock_tick)
+        self.csv.fetch_input_from_in_file(Plugin.clock_tick)
         if not self.running:
             t = threading.Thread(target=self.run_thread)
             t.start()
@@ -368,7 +367,7 @@ class Plugin(ABC):
                 print(f"WARNING: {self._plugin_name} didn't complete")
         for connection in self._connections:
             connection()
-        self.csv.save_output_to_file(self.clock_tick)
+        self.csv.save_output_to_file(Plugin.clock_tick)
         return self.debug
 
     @abstractmethod

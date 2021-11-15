@@ -29,6 +29,7 @@ if __name__ == "__main__":
     Smoother(parent=None).csv.run_test_from_file(Path('csv_testdata/Smoother.csv'))
     Generator(parent=None, expression=lambda loop_index: math.sin(loop_index / 100) * 100).csv.run_test_from_file(Path(
         'csv_testdata/GeneratorSin.csv'))
+
     Container_of_plugins(parent=None).csv.run_test_from_file(Path(
         'csv_testdata/container_of_plugins.csv'))
 
