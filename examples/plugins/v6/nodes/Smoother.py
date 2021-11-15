@@ -25,6 +25,8 @@ class Smoother(Plugin, InSpeed, InDeltaMax, InWindowSize, OutSpeed):
             self.speed_history.pop(0)
         speed_avg = sum(self.speed_history) / len(self.speed_history)
         self.out_speed = speed_avg if abs(self.in_speed - speed_avg) < self.in_delta_max else self.in_speed
+        if self.out_speed>2: self.log.info(f"FAST:{self.out_speed}")
+        self.log.info(f"Last line")
 
 
 

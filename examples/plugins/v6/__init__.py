@@ -1,7 +1,9 @@
 from __future__ import annotations
 import csv
+import logging
 import threading
 from abc import ABC, abstractmethod
+from io import StringIO
 from pathlib import Path
 from typing import Callable, Any
 
@@ -219,7 +221,7 @@ class Csv:
             self.in_dict: {} = list(csv.DictReader(open(in_file)))
         if out_file:
             self.out_file = out_file
-            column_names = ['clock_tick']+self.in_vars+self.out_vars+[self.plugin._plugin_name]
+            column_names = ['clock_tick']+self.in_vars+self.out_vars+['log']+[self.plugin._plugin_name]
             self.out_writer_file = open(self.out_file, 'w')
             self.out_writer = csv.DictWriter(self.out_writer_file, fieldnames=column_names, quoting = csv.QUOTE_NONNUMERIC)
             self.out_writer.writeheader()
@@ -256,6 +258,10 @@ class Csv:
             d.update({'clock_tick': clock_tick})
             for out_var in self.in_vars + self.out_vars:
                 d.update({out_var: self.plugin.__getattribute__(out_var)})
+            d.update({'log':self.plugin.log_buffer.getvalue().replace('\n', '   ')})
+            self.plugin.log_buffer.truncate(0)
+            self.plugin.log_buffer.seek(0)
+            #d.update({'log': "qwerty"})
             self.out_writer.writerow(d)
 
     def run_test_from_file(self, verif_file: Path = None) -> []:
@@ -304,6 +310,13 @@ class Plugin(ABC):
         self.csv = Csv(self, csv_in, LOGDIR.name+'/'+self._plugin_name)
         self.running = False
         self.timeout = 0.05
+        self.log = logging.getLogger(self._plugin_name)
+        self.log_buffer = StringIO()
+        handler = logging.StreamHandler(self.log_buffer)
+        handler.setFormatter(logging.Formatter('Line:%(lineno)s-%(message)s'))
+        self.log.addHandler(handler)
+        q = self.log_buffer.getvalue()
+        print(q)
 
     def get_unique_name(self, plugin_name):
         name = self.__class__.__name__ if plugin_name is None else plugin_name

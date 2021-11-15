@@ -1,3 +1,4 @@
+import logging
 import math
 from pathlib import Path
 
@@ -12,10 +13,18 @@ logs in plugin to each csv file column
 logs all logs in one file
 automatsik generering av testdata.
 exception i loops
+chip enable
+sammanfattning antal passed/fail
+
 
 
 '''
 if __name__ == "__main__":
+    logging.basicConfig(filename='logs/logger.log', level=logging.INFO,
+                        format='%(asctime)s,%(msecs)d %(levelname)-5s P:%(name)s  %(message)s [%(funcName)s() %(filename)s:%(lineno)d]',
+                        datefmt='%Y-%m-%d:%H:%M:%S',
+                        force=True)
+
     print("Running tests:")
     if 0:
         c = Container_of_container(parent=None, csv_out=Path('../v6/csv_out/Container_of_container.csv'))
