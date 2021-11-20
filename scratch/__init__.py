@@ -77,6 +77,7 @@ class SpiActiveFlash(object):
 
 def get_pages_from_file(file_name:Path, page_size:int=256, pad_last_page=0xff) -> [[int]]:
     pages=[]
+    print("Reading flashfile")
     with open(file_name.absolute(), 'rb') as f:
         while (chunk := f.read(page_size)) != b'':
             pages.append(list(chunk))
@@ -84,6 +85,7 @@ def get_pages_from_file(file_name:Path, page_size:int=256, pad_last_page=0xff) -
     last_page = pages[-1]
     for i in range(page_size - len(last_page)):
         last_page.append(pad_last_page)
+    print("Done reading flashfile")
     return pages
 
 
