@@ -112,13 +112,23 @@ spi.xfer2([0x9F, 0x9F,0,0,0,0,0]) #ID
 spi.xfer2([0x06]) #Write enable
 spi.xfer2([0xC4,0,0,0,0]) # BULK erase
 spi.xfer2([0x5, 0x5])[1] #Wait for bulk erase
+spi.xfer2([0x70, 0x70])[1] #Wait for bulk erase
 
 #READ 4-bytes
 spi.xfer2([0xb7]) #Enter 4-byte mode
 spi.xfer2([0x03, 0, 0, 0,0] + [255 for _ in range(256)]) #READ
-spi.xfer2([0x03, 0, 0, 0,1] + [255 for _ in range(256)]) #READ
-spi.xfer2([0x03, 0, 0, 10,0] + [255 for _ in range(256)]) #READ
+spi.xfer2([0x03, 0, 0, 1,0] + [255 for _ in range(256)]) #READ
+spi.xfer2([0x03, 0, 0, 2,0] + [255 for _ in range(256)]) #READ
+spi.xfer2([0x03, 0, 0, 3,0] + [255 for _ in range(256)]) #READ
+spi.xfer2([0x03, 0, 0, 4,0] + [255 for _ in range(256)]) #READ
+spi.xfer2([0x03, 0, 0, 5,0] + [255 for _ in range(256)]) #READ
+spi.xfer2([0x03, 0, 0, 6,0] + [255 for _ in range(256)]) #READ
+spi.xfer2([0x03, 0, 0, 7,0] + [255 for _ in range(256)]) #READ
+spi.xfer2([0x03, 0, 0, 8,0] + [255 for _ in range(256)]) #READ
 spi.xfer2([0x03, 0, 0, 9,0] + [255 for _ in range(256)]) #READ
+spi.xfer2([0x03, 0, 0, 10,0] + [255 for _ in range(256)]) #READ
+spi.xfer2([0x03, 0, 0, 11,0] + [255 for _ in range(256)]) #READ
+
 
 #WRITE
 spi.xfer2([0xb7]) #Enter 4-byte mode
@@ -132,7 +142,7 @@ spi.xfer2([0x2, 0,1,0,0] + [1+x for x in range(63)]) #Write
 
 
 
-spi.xfer2([0x03, 0, 12, 0] + [255 for _ in range(256)]) #READ
+spi.xfer2([0x03, 0, 0, 0] + [255 for _ in range(256)]) #READ
 spi.xfer2([0x06]) #Write enable
 spi.xfer2([0x2, 0,12,0] + [(x)%256 for x in range(256)]) #Write
 spi.xfer2([0x03, 0, 12, 0] + [255 for _ in range(256)]) #READ

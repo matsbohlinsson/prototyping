@@ -9,11 +9,14 @@ from examples.plugins.v6.nodes.container_of_container import Container_of_contai
 
 '''
 TODO
+terminera utifrån o sig själv. 
+Cascade terminering.
+egen data som sparas mellan sessioner.
 logs in plugin to each csv file column
 logs all logs in one file
 automatsik generering av testdata.
 exception i loops
-chip enable
+chip enable, nix
 sammanfattning antal passed/fail
 
 
