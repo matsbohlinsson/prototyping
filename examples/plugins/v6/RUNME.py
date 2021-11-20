@@ -19,6 +19,8 @@ exception i loops
 chip enable, nix
 sammanfattning antal passed/fail
 
+generera noder från json fil
+generera execution order utifrån connect
 
 
 '''
