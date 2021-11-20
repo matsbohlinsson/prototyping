@@ -30,11 +30,11 @@ if 0: #TI flash
 if 1: #VP flash
     SPI_BUS=0
     SPI_BUS_CS=1
-    SPI_SPEED = 1200000
+    SPI_SPEED = 12000000
     SPI_MODE = 3
     VERIFY = True
     FILE_DEFAULT = '/home/root/firmware/binary/vp-fpga/vp-fpga_mux_spi_ti_flash.bin'
-    FILE_DEFAULT = '/home/root/firmware/binary/ssi-fpga/hld_fpga_p65.rpd'
+    #FILE_DEFAULT = '/home/root/firmware/binary/ssi-fpga/hld_fpga_p65.rpd'
     def enable_flash_mode() -> None:
         setGPIO(GPIO_VP_CSN, 0)
     def disable_flash_mode() -> None:

@@ -26,7 +26,6 @@ class SpiActiveFlash(object):
 
     def write_enable(self) -> None:
         self.spi.xfer2([0x06])
-        sleep_ms(1)
 
     def erase_all_start(self) -> None:
         print("Bulk erase start")
@@ -45,7 +44,7 @@ class SpiActiveFlash(object):
 
     def wait_until_not_busy(self) -> None:
         while (self.spi.xfer2([0x5, 0x5])[1] & 0x1) == 0x1:
-            sleep_ms(1)
+            pass
 
     def write_page_to_flash(self, page:int, bytes:[int]) -> None:
         self.write_enable()
