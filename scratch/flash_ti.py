@@ -76,7 +76,7 @@ def flash(filename: Path, spi_hz:int=SPI_SPEED) -> int:
     if id != DEVICE_ID:
         print("Wrong device id:", id)
         return 1
-    chip.erase_all_start()
+    chip.bulk_erase()
     chip.erase_wait_until_done()
     reverse_pages = pages = get_pages_from_file(filename, page_size=PAGE_SIZE)
     #reverse_pages = reverse_bit_order(pages)
