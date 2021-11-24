@@ -222,7 +222,7 @@ class Csv:
         if out_file:
             self.out_file = out_file
             column_names = ['clock_tick']+self.in_vars+self.out_vars+['log']+[self.plugin._plugin_name]
-            self.out_writer_file = open(self.out_file, 'w')
+            self.out_writer_file = open(self.out_file, 'w', newline='')
             self.out_writer = csv.DictWriter(self.out_writer_file, fieldnames=column_names, quoting = csv.QUOTE_NONNUMERIC)
             self.out_writer.writeheader()
 
