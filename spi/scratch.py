@@ -14,3 +14,27 @@ def get_pages_from_file(file_name:str):
 b=get_pages_from_file('spi_flash.py')
 for i in b:
     print(len(i), i)
+
+
+
+
+class Input:
+    def __init__(self):
+        self.a = 1
+        self.b = 2
+        self.c = 3
+        self.d = "qww"
+
+class A():
+    def __init__(self):
+        self.input = Input()
+        self.a = 1
+
+    def foo(self):
+        print(self.input.d)
+        pass
+
+
+q=A()
+a = q.input.d
+q.input.my_var=10
