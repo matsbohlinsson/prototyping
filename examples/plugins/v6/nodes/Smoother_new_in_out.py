@@ -7,7 +7,7 @@ from examples.plugins.v6 import OutSpeed, InSpeed, InWindowSize, InDeltaMax, Plu
 @dataclass
 class Input:
     speed: float = 0
-    delta_max: float = 2
+    delta_max: float = 4
     window_size: int = 3
     speed_history: [float] = field(default_factory=list)
 
@@ -18,13 +18,13 @@ class Output:
     speed: float = 0
 
 
-def average(self, _in: Input, _out: Output, _log: logging.Logger):
-    _out.speed_history.append(_in.speed)
-    while len(_out.speed_history) > _in.window_size:
-        _out.speed_history.pop(0)
-    speed_avg = sum(_out.speed_history) / len(_out.speed_history)
-    _out.speed = speed_avg if abs(_in.speed - speed_avg) < _in.delta_max else _in.speed
-    if _out.speed>2: _log.info(f"FAST:{_out.speed}")
+def average(in_vars: Input, out_vars: Output, _log: logging.Logger):
+    out_vars.speed_history.append(in_vars.speed)
+    while len(out_vars.speed_history) > in_vars.window_size:
+        out_vars.speed_history.pop(0)
+    speed_avg = sum(out_vars.speed_history) / len(out_vars.speed_history)
+    out_vars.speed = speed_avg if abs(in_vars.speed - speed_avg) < in_vars.delta_max else in_vars.speed
+    if out_vars.speed>2: _log.info(f"FAST:{out_vars.speed}")
     _log.info(f"Last line")
 
 
@@ -43,7 +43,15 @@ class Smoother2(Plugin):
 
 
 if __name__ == "__main__":
-    s = Smoother2(_input=Input(window_size=10, delta_max=3), _output=Output(), _function=average)
+    #s = Smoother2(_input=Input(window_size=10, delta_max=3), _output=Output(), _function=average)
     #s._input = Input(window_size=10, delta_max=3)
     #s._output = Output()
     #s._input.speed = 1
+    in_data = Input()
+    out_data = Output()
+    log = logging.getLogger()
+    for speed in range(0,20):
+        in_data.window_size=5
+        in_data.speed=speed
+        average(in_data, out_data, log)
+        print(out_data)
