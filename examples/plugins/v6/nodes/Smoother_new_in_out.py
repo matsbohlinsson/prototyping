@@ -1,8 +1,6 @@
 import logging
-import time
 from dataclasses import dataclass, field
 from typing import Callable
-
 from examples.plugins.v6 import OutSpeed, InSpeed, InWindowSize, InDeltaMax, Plugin
 
 
@@ -12,6 +10,7 @@ class Input:
     delta_max: float = 2
     window_size: int = 3
     speed_history: [float] = field(default_factory=list)
+
 
 @dataclass
 class Output:
@@ -45,6 +44,6 @@ class Smoother2(Plugin):
 
 if __name__ == "__main__":
     s = Smoother2(_input=Input(window_size=10, delta_max=3), _output=Output(), _function=average)
-    s._input = Input(window_size=10, delta_max=3)
-    s._output = Output()
-    s._input.speed = 1
+    #s._input = Input(window_size=10, delta_max=3)
+    #s._output = Output()
+    #s._input.speed = 1
