@@ -48,3 +48,7 @@ if __name__ == "__main__":
         'csv_testdata/container_of_plugins.csv'))
 
     print("END")
+
+    s=Smoother(parent=None)
+    print(s.in_speed)
+    s.in_speed = 12

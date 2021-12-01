@@ -2,6 +2,7 @@ import logging
 from dataclasses import dataclass, field
 from typing import Callable
 from examples.plugins.v6 import OutSpeed, InSpeed, InWindowSize, InDeltaMax, Plugin
+from statistics import mean
 
 
 @dataclass
@@ -18,28 +19,27 @@ class Output:
     speed: float = 0
 
 
-def average(in_vars: Input, out_vars: Output, _log: logging.Logger):
-    out_vars.speed_history.append(in_vars.speed)
-    while len(out_vars.speed_history) > in_vars.window_size:
-        out_vars.speed_history.pop(0)
-    speed_avg = sum(out_vars.speed_history) / len(out_vars.speed_history)
-    out_vars.speed = speed_avg if abs(in_vars.speed - speed_avg) < in_vars.delta_max else in_vars.speed
-    if out_vars.speed>2: _log.info(f"FAST:{out_vars.speed}")
+def transfer_function(in_: Input, out: Output, _log: logging.Logger):
+    in_.speed_history.append(in_.speed)
+    out.speed_history = in_.speed_history[-in_.window_size:]
+    speed_avg = mean(out.speed_history)
+    out.speed = speed_avg if abs(in_.speed - speed_avg) < in_.delta_max else in_.speed
+    # Log data
+    if out.speed>2: _log.info(f"FAST:{out.speed}")
     _log.info(f"Last line")
-
 
 
 @dataclass
 class Smoother2(Plugin):
-    _input: Input
-    _output: Output
-    _function: Callable
+    in_: Input
+    out: Output
+    transfer_function: Callable
 
     def __post_init__(self):
-        super().__init__(self)
+        super().__init__(parent=self)
 
-    def main_loop(self):
-        average(self._input, self._output, self.log)
+    def main_loop(out_vars):
+        transfer_function(out_vars.in_, out_vars.out, out_vars.log)
 
 
 if __name__ == "__main__":
@@ -53,5 +53,5 @@ if __name__ == "__main__":
     for speed in range(0,20):
         in_data.window_size=5
         in_data.speed=speed
-        average(in_data, out_data, log)
+        transfer_function(in_data, out_data, log)
         print(out_data)
