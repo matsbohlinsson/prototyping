@@ -1,8 +1,11 @@
 import logging
 from dataclasses import dataclass, field
+from pathlib import Path
 from typing import Callable
 from examples.plugins.v6 import OutSpeed, InSpeed, InWindowSize, InDeltaMax, Plugin
 from statistics import mean
+
+from examples.plugins.v6.nodes.Smoother import Smoother
 
 
 @dataclass
@@ -50,8 +53,12 @@ if __name__ == "__main__":
     in_data = Input()
     out_data = Output()
     log = logging.getLogger()
-    for speed in range(0,20):
-        in_data.window_size=5
-        in_data.speed=speed
-        transfer_function(in_data, out_data, log)
-        print(out_data)
+    '''
+        for speed in range(0,20):
+            in_data.window_size=5
+            in_data.speed=speed
+            transfer_function(in_data, out_data, log)
+            print(out_data)
+    '''
+    s = Smoother2(in_=Input(window_size=10, delta_max=3), out=Output(), transfer_function=transfer_function, plugin_name='Speed smoother')
+    s.csv.run_test_from_file(Path('../csv_testdata/Smoother.csv'))
