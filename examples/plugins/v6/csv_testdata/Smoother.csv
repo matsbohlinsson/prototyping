@@ -1,4 +1,4 @@
-"loop_counter","in_delta_max","in_speed","in_window_size","out_speed","Smoother"
+"loop_counter","in_.delta_max","in_.speed","in_.window_size","out.speed","Smoother"
 0,10.0,0.0,20.0,0.0,""
 1,10.0,0.9999833334166665,20.0,0.14285476191666663,""
 2,10.0,1.999866669333308,20.0,0.3749812503437468,""

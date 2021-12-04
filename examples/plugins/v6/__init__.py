@@ -213,8 +213,8 @@ class Csv:
         out_file.touch()
         self.out_file = None
         self.in_file = None
-        self.in_vars = [attr for attr in dir(plugin) if attr.startswith('in_')]
-        self.out_vars = [attr for attr in dir(plugin) if attr.startswith('out_')]
+        self.in_vars = [x for x in plugin.in_.__dict__]
+        self.out_vars = [x for x in plugin.out.__dict__]
         self.plugin = plugin
         if in_file:
             self.in_file = in_file
@@ -239,15 +239,15 @@ class Csv:
         in_name: str
         for in_name, value  in row.items():
             if in_name.startswith('in_'):
-                self.plugin.__getattribute__(in_name) # Fails if attribut doesn't exists
+                self.plugin.in_.__getattribute__(in_name.split('.')[1]) # Fails if attribut doesn't exists
                 self.plugin.__setattr__(in_name, self.str_to_nbr(value))
 
     def _compare_output_with_dict(self, row: {}):
         out_name: str
         diff = {}
         for out_name, expected  in row.items():
-            if out_name.startswith('out_'):
-                real = self.plugin.__getattribute__(out_name) # Fails if attribut doesn't exists
+            if out_name.startswith('out.'):
+                real = self.plugin.out.__getattribute__(out_name.split('.')[1]) # Fails if attribut doesn't exists
                 if expected != real:
                     diff.update({out_name: {'real':real, 'expected':expected}})
         return diff
@@ -256,8 +256,10 @@ class Csv:
         if self.out_file:
             d = {}
             d.update({'clock_tick': clock_tick})
-            for out_var in self.in_vars + self.out_vars:
-                d.update({out_var: self.plugin.__getattribute__(out_var)})
+            for out_var in self.in_vars:
+                d.update({out_var: self.plugin.in_.__getattribute__(out_var)})
+            for out_var in self.out_vars:
+                d.update({out_var: self.plugin.out.__getattribute__(out_var)})
             d.update({'log':self.plugin.log_buffer.getvalue().replace('\n', '   ')})
             self.plugin.log_buffer.truncate(0)
             self.plugin.log_buffer.seek(0)
@@ -297,15 +299,18 @@ class Plugin(ABC):
     __names = []
     clock_tick: int = 0
     running: bool
+    plugin_name:str
 
 
-    def __init__(self, parent:Plugin, plugin_name:str=None, csv_in: Path=None, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, in_, out, parent:Plugin, plugin_name:str=None, csv_in: Path=None, *args, **kwargs):
+        #super().__init__(*args, **kwargs)
         self._connections = []
         self.debug = {}
         self._execution_list = []
         self.api = Api()
         self.parent = parent
+        self.in_ = in_
+        self.out = out
         self._plugin_name = self.get_unique_name(plugin_name)
         self.csv = Csv(self, csv_in, LOGDIR.name+'/'+self._plugin_name)
         self.running = False

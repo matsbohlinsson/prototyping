@@ -32,14 +32,13 @@ def transfer_function(in_: Input, out: Output, _log: logging.Logger):
     _log.info(f"Last line")
 
 
-@dataclass
 class Smoother2(Plugin):
     in_: Input
     out: Output
     transfer_function: Callable
 
-    def __post_init__(self):
-        super().__init__(parent=self)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
     def main_loop(out_vars):
         transfer_function(out_vars.in_, out_vars.out, out_vars.log)
@@ -60,5 +59,5 @@ if __name__ == "__main__":
             transfer_function(in_data, out_data, log)
             print(out_data)
     '''
-    s = Smoother2(in_=Input(window_size=10, delta_max=3), out=Output(), transfer_function=transfer_function, plugin_name='Speed smoother')
+    s = Smoother2(in_=Input(window_size=10, delta_max=3), out=Output(), transfer_function=transfer_function, plugin_name='qq', parent=None)
     s.csv.run_test_from_file(Path('../csv_testdata/Smoother.csv'))
