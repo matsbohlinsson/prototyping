@@ -47,128 +47,6 @@ class P:
         return self._value
 
 
-class OutValue(Interface_out):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self._out_value = 0
-
-    @property
-    def out_value(self):
-        return self._out_value
-
-    @out_value.setter
-    def out_value(self, value):
-        self._out_value = value
-
-
-class OutSpeed(Interface_out):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self._out_speed = 0
-
-    @property
-    def out_speed(self):
-        return self._out_speed
-
-    @out_speed.setter
-    def out_speed(self, speed):
-        self._out_speed = speed
-
-
-class InSpeed(Interface_in):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self._in_speed = 0
-
-    @property
-    def in_speed(self):
-        return self._in_speed
-
-    @in_speed.setter
-    def in_speed(self, speed):
-        self._in_speed = speed
-
-class InDeltaMax(Interface_in):
-    def __init__(self, in_delta_max=10, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.in_delta_max = in_delta_max
-
-    @property
-    def in_speed(self):
-        return self._in_speed
-
-    @in_speed.setter
-    def in_speed(self, speed):
-        self._in_speed = speed
-
-class InHeight(Interface_in):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self._in_height = 0
-
-    @property
-    def in_height(self):
-        return self._in_height
-
-    @in_height.setter
-    def in_height(self, height):
-        self._in_height = height
-
-class InCourse(Interface_in):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.course = None
-
-class InWindowSize(Interface_in):
-    def __init__(self, in_window_size:int=5, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self._in_window_size = in_window_size
-
-    @property
-    def in_window_size(self):
-        return self._in_window_size
-
-    @in_window_size.setter
-    def in_window_size(self, new):
-        old = self._in_window_size
-        self._in_window_size = new
-        self._value_changed(old, new)
-
-    def onchange_in_window_size(self, callback):
-        self._observers.append(callback)
-
-
-class OutCourse(Interface_in):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.course = None
-
-
-class OutHeight(Interface_in):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.out_height = None
-    @property
-    def out_height(self, *args, **kwargs):
-        return self._out_height
-
-    @out_height.setter
-    def out_height(self, height, *args, **kwargs):
-        self._out_height = height
-
-
-class OutLatLon(Interface_in):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.out_lat = None
-        self.out_lon = None
-
-
-class InLatLon(Interface_in):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.in_lat = None
-        self.in_lon = None
 
 
 class Runtime():
@@ -213,8 +91,8 @@ class Csv:
         out_file.touch()
         self.out_file = None
         self.in_file = None
-        self.in_vars = ['in_.'+x for x in plugin.in_.__dict__]
-        self.out_vars = ['out.'+x for x in plugin.out.__dict__]
+        self.in_vars = ['input.' + x for x in plugin.input.__dict__]
+        self.out_vars = ['output.' + x for x in plugin.output.__dict__]
         self.plugin = plugin
         if in_file:
             self.in_file = in_file
@@ -238,8 +116,8 @@ class Csv:
     def _fetch_input_from_dict(self, row: {}):
         in_name: str
         for in_name, value  in row.items():
-            if in_name.startswith('in_'):
-                self.plugin.in_.__getattribute__(in_name.split('.')[1]) # Fails if attribut doesn't exists
+            if in_name.startswith('input'):
+                self.plugin.input.__getattribute__(in_name.split('.')[1]) # Fails if attribut doesn't exists
                 #self.plugin.__setattr__(in_name, self.str_to_nbr(value))
                 e = f'self.plugin.{in_name}={value}'
                 print(e)
@@ -249,8 +127,8 @@ class Csv:
         out_name: str
         diff = {}
         for out_name, expected  in row.items():
-            if out_name.startswith('out.'):
-                real = self.plugin.out.__getattribute__(out_name.split('.')[1]) # Fails if attribut doesn't exists
+            if out_name.startswith('output.'):
+                real = self.plugin.output.__getattribute__(out_name.split('.')[1]) # Fails if attribut doesn't exists
                 if eval(str(expected)) != eval(str(real)):
                     diff.update({out_name: {'real':real, 'expected':expected}})
         return diff
@@ -306,15 +184,15 @@ class Plugin(ABC):
     plugin_name:str
 
 
-    def __init__(self, in_, out, parent:Plugin, plugin_name:str=None, csv_in: Path=None, *args, **kwargs):
+    def __init__(self, input, output, parent:Plugin, plugin_name:str=None, csv_in: Path=None, *args, **kwargs):
         #super().__init__(*args, **kwargs)
         self._connections = []
         self.debug = {}
         self._execution_list = []
         self.api = Api()
         self.parent = parent
-        self.in_ = in_
-        self.out = out
+        self.input = input
+        self.output = output
         self._plugin_name = self.get_unique_name(plugin_name)
         self.csv = Csv(self, csv_in, LOGDIR.name+'/'+self._plugin_name)
         self.running = False
@@ -324,8 +202,10 @@ class Plugin(ABC):
         handler = logging.StreamHandler(self.log_buffer)
         handler.setFormatter(logging.Formatter('Line:%(lineno)s-%(message)s'))
         self.log.addHandler(handler)
-        q = self.log_buffer.getvalue()
-        print(q)
+        logging.basicConfig(filename='logs/logger.log', level=logging.INFO,
+                        format='%(asctime)s,%(msecs)d %(levelname)-5s P:%(name)s  %(message)s [%(funcName)s() %(filename)s:%(lineno)d]',
+                        datefmt='%Y-%m-%d:%H:%M:%S',
+                        force=True)
 
     def get_unique_name(self, plugin_name):
         name = self.__class__.__name__ if plugin_name is None else plugin_name

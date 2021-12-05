@@ -1,36 +1,38 @@
-import time
+import logging
+from dataclasses import dataclass, field
+from pathlib import Path
+from examples.plugins import GeneralPlugin
+from statistics import mean
 
-from examples.plugins.v6 import OutSpeed, InSpeed, InWindowSize, InDeltaMax, Plugin
-from scratch2.scheduler import on_scheduler_fast_loop, on_restarted, restart_on_exception, on_exception, on_first_loop
+PLUGIN_NAME=__file__.split('.')[0]
 
-
-@restart_on_exception
-class Smoother(Plugin, InSpeed, InDeltaMax, InWindowSize, OutSpeed):
-    speed_change_limit: int
-    speed_history: list
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        speed = self.in_speed if self.in_speed is not None else 0
-        self.speed_history = [speed] * self.in_window_size
-        self.onchange_in_window_size(self.window_size_change)
-
-    def  window_size_change(self, x):
-        if len(self.speed_history)>self.in_window_size:
-            self.speed_history.pop(0)
-
-    def main_loop(self):
-        self.speed_history.append(self.in_speed)
-        if len(self.speed_history)>self.in_window_size:
-            self.speed_history.pop(0)
-        speed_avg = sum(self.speed_history) / len(self.speed_history)
-        self.out_speed = speed_avg if abs(self.in_speed - speed_avg) < self.in_delta_max else self.in_speed
-        if self.out_speed>2: self.log.info(f"FAST:{self.out_speed}")
-        self.log.info(f"Last line")
+@dataclass
+class Input:
+    value: float = 0
+    delta_max: float = 4
+    window_size: int = 3
+    value_history: [float] = field(default_factory=list)
 
 
+@dataclass
+class Output:
+    value: float = 0
+    value_history:  [float] = field(default_factory=list)
 
 
+def run(input: Input, output: Output, log: logging.Logger):
+    output.value_history = input.value_history.copy()
+    output.value_history.append(input.value)
+    output.value_history = output.value_history[-int(input.window_size):]
+    speed_avg = mean(output.value_history)
+    output.value = speed_avg if abs(input.value - speed_avg) < input.delta_max else input.value
+
+def run_post(input: Input, output: Output, log: logging.Logger):
+    input.value_history = output.value_history.copy()
 
 
-
+if __name__ == "__main__":
+    in_data = Input()
+    out_data = Output()
+    s = GeneralPlugin(input=Input(window_size=10, delta_max=3), output=Output(), run_function=run, run_post_function=run_post, plugin_name=PLUGIN_NAME, parent=None)
+    s.csv.run_test_from_file(Path('../csv_testdata/Smoother.csv'))
