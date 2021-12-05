@@ -18,13 +18,15 @@ class Input:
 
 @dataclass
 class Output:
-    speed_history:  [float] = field(default_factory=list)
     speed: float = 0
+    speed_history:  [float] = field(default_factory=list)
 
 
 def transfer_function(in_: Input, out: Output, _log: logging.Logger):
-    in_.speed_history.append(in_.speed)
-    out.speed_history = in_.speed_history[-in_.window_size:]
+    #in_.speed_history.append(in_.speed)
+    out.speed_history = in_.speed_history.copy()
+    out.speed_history = out.speed_history[-int(in_.window_size-1):]
+    out.speed_history.append(in_.speed)
     speed_avg = mean(out.speed_history)
     out.speed = speed_avg if abs(in_.speed - speed_avg) < in_.delta_max else in_.speed
     # Log data
@@ -40,24 +42,16 @@ class Smoother2(Plugin):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-    def main_loop(out_vars):
-        transfer_function(out_vars.in_, out_vars.out, out_vars.log)
+    def run(self):
+        transfer_function(self.in_, self.out, self.log)
+
+    def run_post(self):
+        self.in_.speed_history = self.out.speed_history.copy()
 
 
 if __name__ == "__main__":
-    #s = Smoother2(_input=Input(window_size=10, delta_max=3), _output=Output(), _function=average)
-    #s._input = Input(window_size=10, delta_max=3)
-    #s._output = Output()
-    #s._input.speed = 1
     in_data = Input()
     out_data = Output()
     log = logging.getLogger()
-    '''
-        for speed in range(0,20):
-            in_data.window_size=5
-            in_data.speed=speed
-            transfer_function(in_data, out_data, log)
-            print(out_data)
-    '''
-    s = Smoother2(in_=Input(window_size=10, delta_max=3), out=Output(), transfer_function=transfer_function, plugin_name='qq', parent=None)
+    s = Smoother2(in_=Input(window_size=10, delta_max=3), out=Output(), transfer_function=transfer_function, plugin_name='qqq', parent=None)
     s.csv.run_test_from_file(Path('../csv_testdata/Smoother.csv'))

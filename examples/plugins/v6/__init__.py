@@ -213,8 +213,8 @@ class Csv:
         out_file.touch()
         self.out_file = None
         self.in_file = None
-        self.in_vars = [x for x in plugin.in_.__dict__]
-        self.out_vars = [x for x in plugin.out.__dict__]
+        self.in_vars = ['in_.'+x for x in plugin.in_.__dict__]
+        self.out_vars = ['out.'+x for x in plugin.out.__dict__]
         self.plugin = plugin
         if in_file:
             self.in_file = in_file
@@ -240,7 +240,10 @@ class Csv:
         for in_name, value  in row.items():
             if in_name.startswith('in_'):
                 self.plugin.in_.__getattribute__(in_name.split('.')[1]) # Fails if attribut doesn't exists
-                self.plugin.__setattr__(in_name, self.str_to_nbr(value))
+                #self.plugin.__setattr__(in_name, self.str_to_nbr(value))
+                e = f'self.plugin.{in_name}={value}'
+                print(e)
+                exec(e)
 
     def _compare_output_with_dict(self, row: {}):
         out_name: str
@@ -257,14 +260,15 @@ class Csv:
             d = {}
             d.update({'clock_tick': clock_tick})
             for out_var in self.in_vars:
-                d.update({out_var: self.plugin.in_.__getattribute__(out_var)})
+                d.update({out_var: eval(f'self.plugin.{out_var}')})
             for out_var in self.out_vars:
-                d.update({out_var: self.plugin.out.__getattribute__(out_var)})
+                d.update({out_var: eval(f'self.plugin.{out_var}')})
             d.update({'log':self.plugin.log_buffer.getvalue().replace('\n', '   ')})
             self.plugin.log_buffer.truncate(0)
             self.plugin.log_buffer.seek(0)
             #d.update({'log': "qwerty"})
             self.out_writer.writerow(d)
+            print("QQQ", d)
 
     def run_test_from_file(self, verif_file: Path = None) -> []:
         print(f"{self.plugin._plugin_name} running test with data from:{verif_file}", end=' -> ')
@@ -275,7 +279,7 @@ class Csv:
             #print(f"Testing: {self.plugin.plugin_name}: {verif_data}")
             print("New clock")
             self._fetch_input_from_dict(verif_data)
-            self.plugin.execute()
+            self.plugin.execute_node()
             diff = self._compare_output_with_dict(verif_data)
             if diff:
                 all_diff.append(diff)
@@ -388,7 +392,19 @@ class Plugin(ABC):
         self.csv.save_output_to_file(Plugin.clock_tick)
         return self.debug
 
+
+    def execute_node(self):
+        self.run()
+        self.csv.save_output_to_file(Plugin.clock_tick)
+        self.run_post()
+
     @abstractmethod
+    def run(self):
+        pass
+
+    def run_post(self):
+        pass
+
     def main_loop(self):
         pass
 
