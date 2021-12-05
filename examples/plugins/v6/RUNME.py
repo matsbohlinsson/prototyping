@@ -7,6 +7,9 @@ import examples.plugins.v6.nodes.Generator
 
 '''
 TODO
+Lägg till de andra plugins till RUNME
+rensa i init, tag bort all död kod.
+
 terminera utifrån o sig själv. 
 Cascade terminering.
 egen data som sparas mellan sessioner.
