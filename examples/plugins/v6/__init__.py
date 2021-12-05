@@ -146,12 +146,10 @@ class Csv:
             self.plugin.log_buffer.seek(0)
             #d.update({'log': "qwerty"})
             self.out_writer.writerow(d)
-            print("QQQ", d)
 
-    def run_test_from_file(self, verif_file: Path = None) -> []:
-        print(f"{self.plugin._plugin_name} running test with data from:{verif_file}", end=' -> ')
+    def run_test_from_file(self, verif_dict: {} = None) -> []:
+        #print(f"{self.plugin._plugin_name} running test with data from:{verif_file}", end=' -> ')
         all_diff=[]
-        verif_dict: {} = list(csv.DictReader(open(verif_file), quoting = csv.QUOTE_NONNUMERIC))
         for clock_tick, verif_data in enumerate(verif_dict):
             Plugin.clock_tick = clock_tick
             #print(f"Testing: {self.plugin.plugin_name}: {verif_data}")

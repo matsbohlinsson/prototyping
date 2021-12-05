@@ -2,10 +2,8 @@ import logging
 import math
 from pathlib import Path
 
-from examples.plugins.v6.nodes.Smoother import Smoother
-from examples.plugins.v6.nodes.Generator import Generator
-from examples.plugins.v6.nodes.container_of_plugins import Container_of_plugins
-from examples.plugins.v6.nodes.container_of_container import Container_of_container
+import examples.plugins.v6.nodes.Smoother
+import examples.plugins.v6.nodes.Generator
 
 '''
 TODO
@@ -24,7 +22,7 @@ generera execution order utifrån connect
 
 
 '''
-if __name__ == "__main__":
+def old():
     logging.basicConfig(filename='logs/logger.log', level=logging.INFO,
                         format='%(asctime)s,%(msecs)d %(levelname)-5s P:%(name)s  %(message)s [%(funcName)s() %(filename)s:%(lineno)d]',
                         datefmt='%Y-%m-%d:%H:%M:%S',
@@ -52,3 +50,7 @@ if __name__ == "__main__":
     s=Smoother(parent=None)
     print(s.in_speed)
     s.in_speed = 12
+
+if __name__ == "__main__":
+    examples.plugins.v6.nodes.Smoother.test()
+    examples.plugins.v6.nodes.Generator.test()
