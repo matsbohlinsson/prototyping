@@ -135,15 +135,15 @@ class Csv:
 
     def save_output_to_file(self, clock_tick):
         if self.out_file:
+            self.plugin.output.log = self.plugin.log_buffer.getvalue().replace('\n', '   ')
+            self.plugin.log_buffer.truncate(0)
+            self.plugin.log_buffer.seek(0)
             d = {}
             d.update({'clock_tick': clock_tick})
             for out_var in self.in_vars:
                 d.update({out_var: eval(f'self.plugin.{out_var}')})
             for out_var in self.out_vars:
                 d.update({out_var: eval(f'self.plugin.{out_var}')})
-            d.update({'log':self.plugin.log_buffer.getvalue().replace('\n', '   ')})
-            self.plugin.log_buffer.truncate(0)
-            self.plugin.log_buffer.seek(0)
             #d.update({'log': "qwerty"})
             self.out_writer.writerow(d)
 
@@ -192,10 +192,11 @@ class Plugin(ABC):
         self.input = input
         self.output = output
         self._plugin_name = self.get_unique_name(plugin_name)
+        self.log = logging.getLogger(self._plugin_name)
+        self.output.log = ""
         self.csv = Csv(self, csv_in, LOGDIR.name+'/'+self._plugin_name)
         self.running = False
         self.timeout = 0.05
-        self.log = logging.getLogger(self._plugin_name)
         self.log_buffer = StringIO()
         handler = logging.StreamHandler(self.log_buffer)
         handler.setFormatter(logging.Formatter('Line:%(lineno)s-%(message)s'))
