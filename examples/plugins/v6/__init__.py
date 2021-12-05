@@ -251,7 +251,7 @@ class Csv:
         for out_name, expected  in row.items():
             if out_name.startswith('out.'):
                 real = self.plugin.out.__getattribute__(out_name.split('.')[1]) # Fails if attribut doesn't exists
-                if expected != real:
+                if eval(str(expected)) != eval(str(real)):
                     diff.update({out_name: {'real':real, 'expected':expected}})
         return diff
 
