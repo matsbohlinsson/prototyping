@@ -4,7 +4,8 @@ from pathlib import Path
 
 import examples.plugins.v6.nodes.Smoother
 import examples.plugins.v6.nodes.Generator
-
+import examples.plugins.v6.nodes.Mover
+import examples.plugins.v6.nodes.container_of_plugins
 '''
 TODO
 Lägg till de andra plugins till RUNME
@@ -25,35 +26,10 @@ generera execution order utifrån connect
 
 
 '''
-def old():
-    logging.basicConfig(filename='logs/logger.log', level=logging.INFO,
-                        format='%(asctime)s,%(msecs)d %(levelname)-5s P:%(name)s  %(message)s [%(funcName)s() %(filename)s:%(lineno)d]',
-                        datefmt='%Y-%m-%d:%H:%M:%S',
-                        force=True)
-
-    print("Running tests:")
-    if 0:
-        c = Container_of_container(parent=None, csv_out=Path('../v6/csv_out/Container_of_container.csv'))
-        for i in range(10):
-            c.execute()
-        exit(0)
-
-    Container_of_container(parent=None).csv.run_test_from_file(Path(
-        'csv_testdata/container_of_container.csv'))
-
-    Smoother(parent=None).csv.run_test_from_file(Path('csv_testdata/Smoother.csv'))
-    Generator(parent=None, expression=lambda loop_index: math.sin(loop_index / 100) * 100).csv.run_test_from_file(Path(
-        'csv_testdata/GeneratorSin.csv'))
-
-    Container_of_plugins(parent=None).csv.run_test_from_file(Path(
-        'csv_testdata/container_of_plugins.csv'))
-
-    print("END")
-
-    s=Smoother(parent=None)
-    print(s.in_speed)
-    s.in_speed = 12
 
 if __name__ == "__main__":
     examples.plugins.v6.nodes.Smoother.test()
     examples.plugins.v6.nodes.Generator.test()
+    examples.plugins.v6.nodes.Mover.test()
+    examples.plugins.v6.nodes.container_of_plugins.test()
+
