@@ -225,63 +225,22 @@ class Plugin(ABC):
             name = f'{self.parent._plugin_name}/{name}'
         return name
 
-
-    def add_plugin(self, plugin: Plugin):
-        self._execution_list.append(plugin)
-        Plugin._all_plugins.append(plugin)
-
-    def execute(self):
-        debug = {}
-        self.connect_external_inputs()
-        for plugin in self._execution_list:
-            #print(f"{self._plugin_name} Executing:{plugin._plugin_name}")
-            d = plugin.execute()
-            debug.update(d)
-        print(f"{self._plugin_name} Executing_self:{self._plugin_name}")
-        self.execute_self()
-        return debug
-
-    def _connect(self, inp_obj: Plugin, out: Callable[[Any], Any], inp: Callable[[Any], Any]):
-        def debug_info(connection_name:str, value):
-            self.debug.update({connection_name: value})
-
-        def transfer(out, out_obj, inp, inp_obj):
-            inp(inp_obj, out(out_obj))
-            debug_info(f'{out_obj._plugin_name}.{out.__name__}', out(out_obj))
-            debug_info(f'{inp_obj._plugin_name}.{inp.__name__}', out(out_obj))
-
-        out_obj = self
-        #print(out, out_obj, inp, inp_obj)
-        self._connections.append(lambda out=out, out_obj=out_obj, inp=inp, inp_obj=inp_obj: transfer(out, out_obj, inp, inp_obj))
-
-    def connect(self, inp_obj: Plugin, inp, out):
-        self._connect(inp_obj, out.fget, inp.fset)
-
     def run_thread(self):
+        self.output.log = ""
         self.running = True
-        self.main_loop()
+        self.run()
         self.running = False
-        pass
+        self.csv.save_output_to_file(Plugin.clock_tick)
+        self.run_post()
 
-    def execute_self(self) -> {}:
-        self.debug = {}
-        self.csv.fetch_input_from_in_file(Plugin.clock_tick)
+
+    def execute_node(self):
         if not self.running:
             t = threading.Thread(target=self.run_thread)
             t.start()
             t.join(timeout=self.timeout)
             if t.is_alive():
                 print(f"WARNING: {self._plugin_name} didn't complete")
-        for connection in self._connections:
-            connection()
-        self.csv.save_output_to_file(Plugin.clock_tick)
-        return self.debug
-
-
-    def execute_node(self):
-        self.run()
-        self.csv.save_output_to_file(Plugin.clock_tick)
-        self.run_post()
 
     @abstractmethod
     def run(self):
