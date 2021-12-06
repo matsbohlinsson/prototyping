@@ -129,8 +129,14 @@ class Csv:
         for out_name, expected  in row.items():
             if out_name.startswith('output.'):
                 real = self.plugin.output.__getattribute__(out_name.split('.')[1]) # Fails if attribut doesn't exists
-                if eval(str(expected)) != eval(str(real)):
-                    diff.update({out_name: {'real':real, 'expected':expected}})
+                try:
+                    if eval(str(expected)) != eval(str(real)):
+                        diff.update({out_name: {'real':real, 'expected':expected}})
+                except:
+                    if expected != real:
+                        diff.update({out_name: {'real':real, 'expected':expected}})
+
+
         return diff
 
     def save_output_to_file(self, clock_tick):

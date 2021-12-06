@@ -2,7 +2,7 @@ from examples.plugins.v6 import Plugin
 
 
 class GeneralPlugin(Plugin):
-    def __init__(self, input, output, run_function, run_post_function, plugin_name, parent, *args, **kwargs):
+    def __init__(self, input, output, run_function, plugin_name, parent, run_post_function=None, *args, **kwargs):
         self.input=input
         self.output=output
         self.run_function=run_function
@@ -13,4 +13,5 @@ class GeneralPlugin(Plugin):
         self.run_function(self.input, self.output, self.log)
 
     def run_post(self):
-        self.run_post_function(self.input, self.output, self.log)
+        if self.run_post_function:
+            self.run_post_function(self.input, self.output, self.log)
