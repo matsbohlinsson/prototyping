@@ -2,6 +2,8 @@ import math
 import logging
 from dataclasses import dataclass, field
 from pathlib import Path
+from typing import Callable
+
 from examples.plugins import GeneralPlugin
 
 PLUGIN_NAME=Path(__file__).name.split('.')[0]
@@ -10,19 +12,21 @@ CSV_FILE=Path('../csv_testdata/Smoother.csv')
 @dataclass
 class Input:
     start_value: float = 0
-    function: callable = None
-
+    function: Callable[[float], float] = None
 
 @dataclass
 class Output:
     value: float = 0
-
 
 def run(input: Input, output: Output, log: logging.Logger):
     output.value = input.function(input.start_value)
 
 def run_post(input: Input, output: Output, log: logging.Logger):
     input.start_value = input.start_value+1
+
+
+
+
 
 
 def test():
