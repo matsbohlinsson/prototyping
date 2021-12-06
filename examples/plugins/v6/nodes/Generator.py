@@ -36,6 +36,7 @@ class Generator(Plugin):
 
     def run(self):
         self.run_function(self.input, self.output, self.log)
+        #self.log.info(f"hejhopp {self.input.start_value}")
 
     def run_post(self):
         if self.run_post_function:

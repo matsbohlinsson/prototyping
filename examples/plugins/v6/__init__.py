@@ -159,7 +159,6 @@ class Csv:
         for clock_tick, verif_data in enumerate(verif_dict):
             Plugin.clock_tick = clock_tick
             #print(f"Testing: {self.plugin.plugin_name}: {verif_data}")
-            print("New clock")
             self._fetch_input_from_dict(verif_data)
             self.plugin.execute_node()
             diff = self._compare_output_with_dict(verif_data)
