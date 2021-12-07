@@ -225,7 +225,7 @@ class Plugin(ABC):
         return name
 
     def run_thread(self):
-        self.output.log = ""
+        self.output.log = "" # Create one in case we timeout
         self.running = True
         self.run()
         self.running = False

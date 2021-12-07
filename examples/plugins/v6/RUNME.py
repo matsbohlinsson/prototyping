@@ -6,6 +6,8 @@ import examples.plugins.v6.nodes.Smoother
 import examples.plugins.v6.nodes.Generator
 import examples.plugins.v6.nodes.Mover
 import examples.plugins.v6.nodes.container_of_plugins
+import examples.plugins.v6.nodes.container_of_container
+import examples.plugins.v6.nodes.container_of_2container
 '''
 TODO
 Lägg till de andra plugins till RUNME
@@ -32,4 +34,6 @@ if __name__ == "__main__":
     examples.plugins.v6.nodes.Generator.test()
     examples.plugins.v6.nodes.Mover.test()
     examples.plugins.v6.nodes.container_of_plugins.test()
+    examples.plugins.v6.nodes.container_of_container.test()
+    examples.plugins.v6.nodes.container_of_2container.test()
 
