@@ -23,8 +23,8 @@ class Container_of_2container(Plugin):
         super().__init__(input=Input(), output=Output(), *args, **kwargs)
         self.input = Input()
         self.output = Output()
-        self.container_of_plugins1 = Container_of_plugins(parent=self, plugin_name='Container_of_plugins1')
-        self.container_of_plugins2 = Container_of_plugins(parent=self, plugin_name='Container_of_plugins2')
+        self.container_of_plugins1 = Container_of_plugins(parent=self)
+        self.container_of_plugins2 = Container_of_plugins(parent=self)
 
     def run(self):
         #In

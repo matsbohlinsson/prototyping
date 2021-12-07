@@ -219,7 +219,7 @@ class Plugin(ABC):
             while name in Plugin.__names:
                 i=i+1
                 name = name_orig + f'_{i}'
-            Plugin.__names.append(name)
+        Plugin.__names.append(name)
         if self.parent is not None:
             name = f'{self.parent._plugin_name}/{name}'
         return name
