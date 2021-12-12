@@ -64,26 +64,6 @@ class Runtime():
             self.sleep_until_next_execution()
 
 
-class Dji():
-    def __init__(self, runtime):
-        self.runtime=runtime
-        pass
-
-    def takeoff(self):
-        #print("Taking off")
-        #self.java.takeoff()
-        self.runtime.wait(lambda: self.is_flying())
-
-    def is_flying(self):
-        return True
-
-
-class Api:
-    def __init__(self):
-        self.runtime = Runtime()
-        self.dji = Dji(self.runtime)
-
-
 class Csv:
     def __init__(self, plugin:Plugin, in_file: Path, out_dir: str):
         Path(out_dir).mkdir(parents=True, exist_ok=True)
@@ -120,7 +100,6 @@ class Csv:
                 self.plugin.input.__getattribute__(in_name.split('.')[1]) # Fails if attribut doesn't exists
                 #self.plugin.__setattr__(in_name, self.str_to_nbr(value))
                 e = f'self.plugin.{in_name}={value}'
-                print(e)
                 exec(e)
 
     def _compare_output_with_dict(self, row: {}):
@@ -154,11 +133,10 @@ class Csv:
             self.out_writer.writerow(d)
 
     def run_test_from_file(self, verif_dict: {} = None) -> []:
-        #print(f"{self.plugin._plugin_name} running test with data from:{verif_file}", end=' -> ')
+        print(f"{self.plugin._plugin_name} running test")
         all_diff=[]
         for clock_tick, verif_data in enumerate(verif_dict):
             Plugin.clock_tick = clock_tick
-            #print(f"Testing: {self.plugin.plugin_name}: {verif_data}")
             self._fetch_input_from_dict(verif_data)
             self.plugin.execute_node()
             diff = self._compare_output_with_dict(verif_data)
@@ -180,7 +158,6 @@ class Csv:
 class Plugin(ABC):
     _execution_list: list[Plugin]
     _all_plugins: list[Plugin] = []
-    api: Api
     __names = []
     clock_tick: int = 0
     running: bool
@@ -192,7 +169,6 @@ class Plugin(ABC):
         self._connections = []
         self.debug = {}
         self._execution_list = []
-        self.api = Api()
         self.parent = parent
         self.input = input
         self.output = output

@@ -27,7 +27,7 @@ def run_post(input: Input, output: Output, log: logging.Logger):
 
 class Generator(Plugin):
     def __init__(self, *args, **kwargs):
-        super().__init__(input=Input(), output=Output(), *args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.run_function=run
         self.run_post_function=run_post
         self.input = Input()

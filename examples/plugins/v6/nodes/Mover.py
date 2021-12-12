@@ -1,25 +1,42 @@
-import csv
+from __future__ import annotations
 import logging
-import numbers
 from dataclasses import dataclass, field
 from pathlib import Path
-
-from examples.plugins import GeneralPlugin
 from examples.plugins.v6 import Plugin
 
 PLUGIN_NAME=Path(__file__).name.split('.')[0]
 CSV_FILE=Path('../csv_testdata/Mover.csv')
 
+
 @dataclass
-class Input:
+class InputBase:
+    parent: Mover
+
+@dataclass
+class OutputBase:
+    parent: Mover
+
+
+@dataclass
+class Input(InputBase):
     speed: float = 0
     height: float = 0
     course: float = 0
 
+    def pause(self):
+        self.parent.pause()
+
 @dataclass
-class Output:
+class Output(OutputBase):
     speed: float = 0
     height: float = 0
+
+    def register(self, f):
+        self.pause_callback = f
+
+    def pause(self):
+        print("PAUSE in Output")
+        self.pause_callback()
 
 def run(input: Input, output: Output, log: logging.Logger):
     output.speed = input.speed * 3
@@ -27,10 +44,13 @@ def run(input: Input, output: Output, log: logging.Logger):
 
 class Mover(Plugin):
     def __init__(self, *args, **kwargs):
-        super().__init__(input=Input(), output=Output(), *args, **kwargs)
+        super().__init__(Input(self), Output(self), *args, **kwargs)
         self.run_function=run
-        self.input = Input()
-        self.output = Output()
+
+    def pause(self):
+        print("PAUSE in Mover")
+        output: Output = self.output
+        output.pause()
 
     def run(self):
         self.run_function(self.input, self.output, self.log)
@@ -41,6 +61,9 @@ def test():
     s = Mover(parent=None)
     #testdata= list(csv.DictReader(open(CSV_FILE), quoting=csv.QUOTE_NONNUMERIC))
     s.csv.run_test_from_file(verif_dict=testdata)
+    output: Output = s.output
+    output.register(lambda: print("Din mamma"))
+    s.input.pause()
 
 if __name__ == "__main__":
     test()

@@ -1,11 +1,11 @@
-import pickle
-import dill
+#!/usr/bin/env python
+from pathlib import Path
+
+import yaml
+
+p = Path('items.yaml')
+with p.open() as f:
+    data = yaml.load(f, Loader=yaml.FullLoader)
+    print(data)
 
 
-
-def foo2():
-    print("hej")
-
-pickled = pickle.dumps(foo2)
-print(pickled)
-print(foo2.__repr__())

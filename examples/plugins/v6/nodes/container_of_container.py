@@ -20,7 +20,7 @@ class Output:
 
 class Container_of_container(Plugin):
     def __init__(self, *args, **kwargs):
-        super().__init__(input=Input(), output=Output(), *args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.input = Input()
         self.output = Output()
         self.container_of_plugins1 = Container_of_plugins(parent=self, plugin_name='Container_of_plugins1')
