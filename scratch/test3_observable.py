@@ -49,6 +49,7 @@ class Input(InputBase):
 
 
 a = Input(value=12, window_size=23)
+print(a.__dict__)
 a.add_value_observer(lambda newval: print(f'New position for a: {newval}'))
 a.value = 1
 a.add_observer(Input.__annotations__, lambda x:print(f'Change:{x}'))
@@ -57,6 +58,7 @@ a.window_size = 2
 #a.value.q
 ObservableProperty.QQ = 1
 print(a.value.name)
+
 
 
 
