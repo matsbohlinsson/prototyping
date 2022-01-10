@@ -1,3 +1,6 @@
+from pathlib import Path
+
+
 class Event:
 
     def __init__(self, callback):
@@ -28,7 +31,6 @@ class Temperature:
 
 
 print("Din Mamma")
-Temperature.celsius.
 '''t.celsius = 13
 t.celsius = 14
 t.celsius
@@ -37,3 +39,6 @@ tt.celsius = 17
 
 print(t.celsius)
 '''
+
+PLUGIN_NAME=Path(__file__).name.split('.')[0]
+print(PLUGIN_NAME)
