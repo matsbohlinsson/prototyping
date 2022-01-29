@@ -50,6 +50,7 @@ if __name__ == "__main__":
     stop: Event = i.stop.register(lambda x,y,z: ii.stop.notify(x,y,z))
     ii.stop.register(lambda x,y,z: print("WW", x))
     i.stop.notify(a=7,b=8,c=9)
+    
     print(i.stop)
     print(i.stop)
 
