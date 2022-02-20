@@ -26,8 +26,8 @@ height = 720
 width = 1080
 RADIUS = 128
 
-#rectilinear, map1, map2 = equirectangular.GetPerspective(FOV, THETA, PHI, height, width, RADIUS=RADIUS)
-rectilinear= equirectangular.GetPerspective(FOV, THETA, PHI, height, width)
+rectilinear, map1, map2 = equirectangular.GetPerspective(FOV, THETA, PHI, height, width)
+#rectilinear= equirectangular.GetPerspective(FOV, THETA, PHI, height, width)
 print(f'{rectilinear=}')
 
 plt.imshow(cv2.cvtColor(rectilinear, cv2.COLOR_BGR2RGB))
@@ -79,3 +79,8 @@ for (x, y), ds, idxs in zip(pts.astype(np.uint16), distances, indices):
     wsum_j /= wsum
     map1_inverse[y, x] = wsum_j
     map2_inverse[y, x] = wsum_i
+
+
+equirectangular_image = cv2.remap(rectilinear, map1_inverse.astype(np.float32), map2_inverse.astype(np.float32), cv2.INTER_CUBIC, borderMode=cv2.BORDER_WRAP)
+plt.imshow(cv2.cvtColor(equirectangular_image[1200:2900, 2800:5400], cv2.COLOR_BGR2RGB))
+plt.show()

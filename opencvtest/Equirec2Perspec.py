@@ -72,4 +72,4 @@ class Equirectangular:
         XY = lonlat2XY(lonlat, shape=self._img.shape).astype(np.float32)
         persp = cv2.remap(self._img, XY[..., 0], XY[..., 1], cv2.INTER_CUBIC, borderMode=cv2.BORDER_WRAP)
 
-        return persp
+        return persp, XY[..., 0], XY[..., 1]
